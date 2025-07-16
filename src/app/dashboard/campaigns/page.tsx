@@ -1,16 +1,13 @@
+
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
-import { Button } from "@/components/ui/button"
-import { CampaignCard } from "./campaign-card"
 import type { Campaign } from "@/types"
+import { CampaignCard } from "./campaign-card"
+import { CreateCampaignDialog } from "./create-campaign-dialog"
 
 async function getCampaigns(): Promise<Campaign[]> {
-  // Fetch data from your API endpoint.
-  // This is a server component, so we can fetch data directly.
-  // In a real app, you would have this URL in an environment variable.
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
   if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch data')
   }
  
@@ -29,7 +26,7 @@ export default async function CampaignsPage() {
             Manage all ad campaigns fetched from Meta.
           </p>
         </div>
-        <Button>Add Campaign</Button>
+        <CreateCampaignDialog />
       </div>
       <div className="hidden md:block">
         <DataTable columns={columns} data={campaigns} />
