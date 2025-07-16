@@ -18,13 +18,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { accounts } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { Campaign } from "@/types";
 
 export function CreateCampaignDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<string>("");
+  const [status, setStatus] = useState<Campaign['status']>('active');
+  const [platform, setPlatform] = useState<Campaign['platform']>('Facebook');
+  const [reach, setReach] = useState("");
+  const [impressions, setImpressions] = useState("");
+  const [conversions, setConversions] = useState("");
+  const [ctr, setCtr] = useState("");
+  const [cpc, setCpc] = useState("");
+  const [cpm, setCpm] = useState("");
+
   const { toast } = useToast();
 
   const handleSave = () => {
@@ -32,8 +41,15 @@ export function CreateCampaignDialog() {
     console.log("Saving campaign:", {
       name,
       description,
-      targetAudience,
       accountId: selectedAccount,
+      status,
+      platform,
+      reach: parseInt(reach) || 0,
+      impressions: parseInt(impressions) || 0,
+      conversions: parseInt(conversions) || 0,
+      ctr: parseFloat(ctr) || 0,
+      cpc: parseFloat(cpc) || 0,
+      cpm: parseFloat(cpm) || 0,
     });
     toast({
       title: "Campaign Created",
@@ -43,18 +59,25 @@ export function CreateCampaignDialog() {
     setOpen(false);
     setName("");
     setDescription("");
-    setTargetAudience("");
     setSelectedAccount("");
+    setStatus("active");
+    setPlatform("Facebook");
+    setReach("");
+    setImpressions("");
+    setConversions("");
+    setCtr("");
+    setCpc("");
+    setCpm("");
   };
 
-  const isSaveDisabled = !name || !description || !targetAudience || !selectedAccount;
+  const isSaveDisabled = !name || !description || !selectedAccount;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Add Campaign</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Campaign</DialogTitle>
           <DialogDescription>
@@ -83,39 +106,79 @@ export function CreateCampaignDialog() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="col-span-3"
-                rows={4}
+                rows={3}
                 placeholder="A compelling, short description for the ad copy."
                 />
             </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="campaign-audience" className="text-right pt-2">
-                Audience
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="client-account" className="text-right">
+                    Client
                 </Label>
-                <Textarea
-                id="campaign-audience"
-                value={targetAudience}
-                onChange={(e) => setTargetAudience(e.target.value)}
-                className="col-span-3"
-                rows={3}
-                placeholder="e.g., Fitness enthusiasts aged 25-40"
-                />
+                <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select an account" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {accounts.map(acc => (
+                            <SelectItem key={acc.id} value={acc.id}>
+                                {acc.clientName}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="platform" className="text-right">
+                    Platform
+                </Label>
+                <Select value={platform} onValueChange={(val: Campaign['platform']) => setPlatform(val)}>
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Facebook">Facebook</SelectItem>
+                        <SelectItem value="Instagram">Instagram</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                    Status
+                </Label>
+                <Select value={status} onValueChange={(val: Campaign['status']) => setStatus(val)}>
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="paused">Paused</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="client-account" className="text-right">
-                Client
-            </Label>
-            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select an account" />
-                </SelectTrigger>
-                <SelectContent>
-                    {accounts.map(acc => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                            {acc.clientName}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+                <Label htmlFor="reach" className="text-right">Reach</Label>
+                <Input id="reach" type="number" value={reach} onChange={e => setReach(e.target.value)} className="col-span-3" placeholder="e.g., 15000" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="impressions" className="text-right">Impressions</Label>
+                <Input id="impressions" type="number" value={impressions} onChange={e => setImpressions(e.target.value)} className="col-span-3" placeholder="e.g., 50000" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="conversions" className="text-right">Conversions</Label>
+                <Input id="conversions" type="number" value={conversions} onChange={e => setConversions(e.target.value)} className="col-span-3" placeholder="e.g., 250" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="ctr" className="text-right">CTR (%)</Label>
+                <Input id="ctr" type="number" value={ctr} onChange={e => setCtr(e.target.value)} className="col-span-3" placeholder="e.g., 2.5" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="cpc" className="text-right">CPC ($)</Label>
+                <Input id="cpc" type="number" value={cpc} onChange={e => setCpc(e.target.value)} className="col-span-3" placeholder="e.g., 0.75" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="cpm" className="text-right">CPM ($)</Label>
+                <Input id="cpm" type="number" value={cpm} onChange={e => setCpm(e.target.value)} className="col-span-3" placeholder="e.g., 3.50" />
             </div>
         </div>
         <DialogFooter>
