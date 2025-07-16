@@ -1,3 +1,6 @@
+
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,24 +13,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function UserNav() {
+  const pathname = usePathname();
+  const isClient = pathname.startsWith('/client-dashboard');
+
+  const user = {
+    name: isClient ? "Alice Johnson" : "Admin",
+    email: isClient ? "alice@example.com" : "admin@advision.com",
+    fallback: isClient ? "AJ" : "AD",
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://placehold.co/40x40.png" alt="@admin" />
-            <AvatarFallback>AD</AvatarFallback>
+            <AvatarImage src="https://placehold.co/40x40.png" alt={user.name} data-ai-hint="person" />
+            <AvatarFallback>{user.fallback}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Admin</p>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              admin@advision.com
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -36,9 +49,7 @@ export function UserNav() {
           <DropdownMenuItem>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-          </DropdownMenuItem>
+           {!isClient && <DropdownMenuItem>Billing</DropdownMenuItem>}
           <DropdownMenuItem>
             Settings
           </DropdownMenuItem>
