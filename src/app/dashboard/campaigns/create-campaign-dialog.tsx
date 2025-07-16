@@ -16,49 +16,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { generateCampaign, GenerateCampaignOutput } from "@/ai/flows/generate-campaign-flow";
-import { Loader2 } from "lucide-react";
 import { accounts } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function CreateCampaignDialog() {
   const [open, setOpen] = useState(false);
-  const [product, setProduct] = useState("");
-  const [generatedData, setGeneratedData] = useState<GenerateCampaignOutput | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<string>("");
   const { toast } = useToast();
-
-  const handleGenerate = async () => {
-    if (!product) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Please enter a product or goal first.",
-      });
-      return;
-    }
-    setIsGenerating(true);
-    setGeneratedData(null);
-    try {
-      const result = await generateCampaign({ product });
-      setGeneratedData(result);
-    } catch (error) {
-      console.error(error);
-      toast({
-        variant: "destructive",
-        title: "AI Generation Failed",
-        description: "There was an error generating campaign ideas. Please try again.",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const handleSave = () => {
     // In a real app, you would have a POST API endpoint to save the new campaign
     console.log("Saving campaign:", {
-      ...generatedData,
+      name,
+      description,
+      targetAudience,
       accountId: selectedAccount,
     });
     toast({
@@ -67,10 +41,13 @@ export function CreateCampaignDialog() {
     });
     // Reset state
     setOpen(false);
-    setProduct("");
-    setGeneratedData(null);
+    setName("");
+    setDescription("");
+    setTargetAudience("");
     setSelectedAccount("");
   };
+
+  const isSaveDisabled = !name || !description || !targetAudience || !selectedAccount;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,92 +58,68 @@ export function CreateCampaignDialog() {
         <DialogHeader>
           <DialogTitle>Add New Campaign</DialogTitle>
           <DialogDescription>
-            Describe your product or goal, and let AI generate campaign ideas for you.
+            Fill in the details below to create a new campaign.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="product" className="text-right">
-              Product/Goal
-            </Label>
-            <Input
-              id="product"
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              className="col-span-3"
-              placeholder="e.g., Eco-friendly running shoes"
-            />
-          </div>
-          <Button onClick={handleGenerate} disabled={isGenerating}>
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "Generate with AI"
-            )}
-          </Button>
-
-          {generatedData && (
-            <div className="space-y-4 pt-4 border-t">
-              <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="campaign-name" className="text-right">
-                  Name
+                Name
                 </Label>
                 <Input
-                  id="campaign-name"
-                  value={generatedData.name}
-                  onChange={(e) => setGeneratedData({ ...generatedData, name: e.target.value })}
-                  className="col-span-3"
+                id="campaign-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="col-span-3"
+                placeholder="e.g., Summer Sale 2024"
                 />
-              </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="campaign-description" className="text-right pt-2">
-                  Description
-                </Label>
-                <Textarea
-                  id="campaign-description"
-                  value={generatedData.description}
-                  onChange={(e) => setGeneratedData({ ...generatedData, description: e.target.value })}
-                  className="col-span-3"
-                  rows={4}
-                />
-              </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="campaign-audience" className="text-right pt-2">
-                  Audience
-                </Label>
-                <Textarea
-                  id="campaign-audience"
-                  value={generatedData.targetAudience}
-                  onChange={(e) => setGeneratedData({ ...generatedData, targetAudience: e.target.value })}
-                  className="col-span-3"
-                  rows={3}
-                />
-              </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="client-account" className="text-right">
-                  Client
-                </Label>
-                <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                    <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select an account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {accounts.map(acc => (
-                            <SelectItem key={acc.id} value={acc.id}>
-                                {acc.clientName}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-              </div>
             </div>
-          )}
+            <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="campaign-description" className="text-right pt-2">
+                Description
+                </Label>
+                <Textarea
+                id="campaign-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="col-span-3"
+                rows={4}
+                placeholder="A compelling, short description for the ad copy."
+                />
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="campaign-audience" className="text-right pt-2">
+                Audience
+                </Label>
+                <Textarea
+                id="campaign-audience"
+                value={targetAudience}
+                onChange={(e) => setTargetAudience(e.target.value)}
+                className="col-span-3"
+                rows={3}
+                placeholder="e.g., Fitness enthusiasts aged 25-40"
+                />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="client-account" className="text-right">
+                Client
+            </Label>
+            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select an account" />
+                </SelectTrigger>
+                <SelectContent>
+                    {accounts.map(acc => (
+                        <SelectItem key={acc.id} value={acc.id}>
+                            {acc.clientName}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleSave} disabled={!generatedData || !selectedAccount}>
+          <Button onClick={handleSave} disabled={isSaveDisabled}>
             Save Campaign
           </Button>
         </DialogFooter>
