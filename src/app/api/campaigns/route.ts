@@ -1,20 +1,34 @@
-import { NextResponse } from 'next/server';
-import { campaigns } from '@/lib/data';
+import { NextResponse, type NextRequest } from 'next/server';
+import { accounts } from '@/lib/data';
 import type { Campaign } from '@/types';
 
-export async function GET() {
-  // In a real app, you would fetch this from the Meta Marketing API.
-  // Below is an example of how you might do that.
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const adAccountId = searchParams.get('adAccountId');
+
+  if (!adAccountId) {
+    // For the admin dashboard, if no specific account is requested,
+    // we can return all campaigns from all accounts.
+    const allCampaigns = accounts.flatMap(acc => acc.campaigns);
+    return NextResponse.json(allCampaigns);
+  }
+
+  const account = accounts.find(acc => acc.id === adAccountId);
+
+  if (!account) {
+    return NextResponse.json({ error: 'Account not found' }, { status: 404 });
+  }
+
+  // In a real app, you would use account.accessToken to fetch from the Meta API.
+  // The example below is updated to reflect this.
 
   /*
-  const adAccountId = 'act_YOUR_AD_ACCOUNT_ID';
-  const accessToken = process.env.META_ACCESS_TOKEN;
-  const fields = 'name,status,reach,impressions,clicks,spend'; // Add more fields as needed
+  const accessToken = account.accessToken;
+  const fields = 'name,status,reach,impressions,clicks,spend';
 
   if (!accessToken) {
-    console.error('Meta access token is not configured.');
-    // Fallback to mock data or return an error
-    return NextResponse.json(campaigns);
+    console.error(`Meta access token is not configured for account ${adAccountId}.`);
+    return NextResponse.json(account.campaigns); // Fallback to mock data
   }
 
   try {
@@ -24,39 +38,23 @@ export async function GET() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Failed to fetch from Meta API:', errorData);
-      // Fallback to mock data or return a more specific error
-      return NextResponse.json(campaigns);
+      console.error(`Failed to fetch from Meta API for account ${adAccountId}:`, errorData);
+      return NextResponse.json(account.campaigns); // Fallback
     }
 
     const data = await response.json();
-
-    // The data from the Meta API will need to be transformed into the `Campaign` shape your app expects.
-    // This is just a conceptual example. You'll need to map the fields correctly.
     const formattedCampaigns: Campaign[] = data.data.map((apiCampaign: any) => ({
-      id: apiCampaign.id,
-      name: apiCampaign.name,
-      status: apiCampaign.status.toLowerCase(), // e.g., 'ACTIVE' -> 'active'
-      reach: apiCampaign.reach,
-      impressions: apiCampaign.impressions,
-      conversions: 0, // You might need another API call for conversions
-      ctr: (apiCampaign.clicks / apiCampaign.impressions) * 100,
-      cpc: apiCampaign.spend / apiCampaign.clicks,
-      cpm: (apiCampaign.spend / apiCampaign.impressions) * 1000,
-      platform: 'Facebook', // You might determine this from other data
-      linked: true,
-      description: `Campaign with ID ${apiCampaign.id}`,
+      // ... transformation logic ...
     }));
 
     return NextResponse.json(formattedCampaigns);
 
   } catch (error) {
-    console.error('Error fetching from Meta API:', error);
-    // In case of a network error, etc., fallback to mock data.
-    return NextResponse.json(campaigns);
+    console.error(`Error fetching from Meta API for account ${adAccountId}:`, error);
+    return NextResponse.json(account.campaigns); // Fallback
   }
   */
 
   // Using mock data for now
-  return NextResponse.json(campaigns);
+  return NextResponse.json(account.campaigns);
 }

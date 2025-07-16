@@ -5,6 +5,7 @@ export type User = {
   role: "admin" | "client";
   avatar: string;
   status: "active" | "archived";
+  adAccountId?: string; // Link to the ad account
 };
 
 export type Campaign = {
@@ -21,4 +22,12 @@ export type Campaign = {
   linked: boolean;
   client?: string; // Client's name
   description: string;
+};
+
+export type Account = {
+  id: string; // This is the ad_account_id
+  name: string;
+  accessToken: string;
+  clientName: string;
+  campaigns: Campaign[];
 };

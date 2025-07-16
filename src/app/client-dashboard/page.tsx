@@ -1,20 +1,35 @@
 import { CampaignCard } from "@/app/dashboard/campaigns/campaign-card"
-import type { Campaign } from "@/types"
+import type { Campaign, User } from "@/types"
 import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
+import { users } from "@/lib/data"
 
-async function getCampaigns(): Promise<Campaign[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
+async function getClientCampaigns(adAccountId: string): Promise<Campaign[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns?adAccountId=${adAccountId}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch campaigns');
   }
   return res.json();
 }
 
+// In a real app, you'd get the current user from session/auth
+async function getCurrentClient(email: string): Promise<User | undefined> {
+    return users.find(u => u.email === email && u.role === 'client');
+}
+
 export default async function ClientDashboardPage() {
-    const allCampaigns = await getCampaigns();
-    const clientName = "Alice Johnson";
-    const clientCampaigns = allCampaigns.filter(c => c.client === clientName);
+    const clientUser = await getCurrentClient("alice@example.com");
+
+    if (!clientUser || !clientUser.adAccountId) {
+        return (
+            <div className="container mx-auto py-2">
+                <h1 className="text-2xl font-bold">Error</h1>
+                <p className="text-muted-foreground">Could not load client data. No ad account is linked.</p>
+            </div>
+        )
+    }
+
+    const clientCampaigns = await getClientCampaigns(clientUser.adAccountId);
 
     const totalReach = clientCampaigns.reduce((sum, camp) => sum + camp.reach, 0);
     const totalImpressions = clientCampaigns.reduce((sum, camp) => sum + camp.impressions, 0);
@@ -23,7 +38,7 @@ export default async function ClientDashboardPage() {
   return (
     <div className="container mx-auto py-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Welcome back, {clientName}!</h1>
+        <h1 className="text-3xl font-bold">Welcome back, {clientUser.name}!</h1>
         <p className="text-muted-foreground">
             Here&apos;s a summary of your active campaigns.
         </p>
