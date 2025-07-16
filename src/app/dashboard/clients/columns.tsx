@@ -1,3 +1,4 @@
+
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
@@ -15,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import type { User } from "@/types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -68,6 +70,9 @@ export const columns: ColumnDef<User>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+                <Link href={`/client-dashboard?viewAs=${user.id}`}>View as Client</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >

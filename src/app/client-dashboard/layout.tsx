@@ -1,21 +1,24 @@
 
 import Link from "next/link";
-import { Package2, BarChart, Settings } from "lucide-react";
+import { Package2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { MainNav } from "@/components/main-nav";
-import { cn } from "@/lib/utils";
 import ClientNav from "./client-nav";
 import { BottomNav } from "@/components/bottom-nav";
 
 export default function ClientDashboardLayout({
   children,
+  searchParams,
 }: {
   children: React.ReactNode;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+
+  const isImpersonating = !!searchParams?.viewAs;
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
@@ -50,7 +53,16 @@ export default function ClientDashboardLayout({
               <ClientNav />
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1" />
+          <div className="w-full flex-1">
+            {isImpersonating && (
+                <Button variant="outline" asChild>
+                    <Link href="/dashboard/clients">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Admin View
+                    </Link>
+                </Button>
+            )}
+          </div>
           <ThemeToggle />
           <UserNav />
         </header>

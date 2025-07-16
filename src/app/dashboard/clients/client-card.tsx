@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
 
 interface ClientCardProps {
   user: User
@@ -46,15 +47,18 @@ export function ClientCard({ user }: ClientCardProps) {
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                    onClick={() => navigator.clipboard.writeText(user.id)}
-                >
-                    Copy user ID
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit user</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">Archive user</DropdownMenuItem>
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/client-dashboard?viewAs=${user.id}`}>View as Client</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => navigator.clipboard.writeText(user.id)}
+                    >
+                        Copy user ID
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Edit user</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">Archive user</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
