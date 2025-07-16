@@ -1,9 +1,10 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, BarChart, Lightbulb, Settings } from "lucide-react";
+import { Home, Users, BarChart, Settings } from "lucide-react";
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -12,13 +13,12 @@ export function BottomNav() {
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/dashboard/campaigns", label: "Campaigns", icon: BarChart },
     { href: "/dashboard/clients", label: "Clients", icon: Users },
-    { href: "/dashboard/ai-insights", label: "AI Insights", icon: Lightbulb },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-card border-t md:hidden">
-      <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
+      <div className="grid h-full max-w-lg grid-cols-4 mx-auto">
         {routes.map((route) => (
           <Link
             key={route.href}
