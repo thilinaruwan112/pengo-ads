@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 export const metadata: Metadata = {
   title: 'AdVision Dashboard',
   description: 'Track and analyze your Meta ad campaigns with ease.',
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
