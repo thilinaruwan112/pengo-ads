@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { cn } from "@/lib/utils"
 
 const data = [
   { name: "Jan", reach: 4000, impressions: 2400 },
@@ -18,9 +19,11 @@ const data = [
   { name: "Dec", reach: 2000, impressions: 9800 },
 ]
 
-export function OverviewChart() {
+interface OverviewChartProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function OverviewChart({ className }: OverviewChartProps) {
   return (
-    <Card className="col-span-4">
+    <Card className={cn(className)}>
         <CardHeader>
             <CardTitle>Overview</CardTitle>
         </CardHeader>

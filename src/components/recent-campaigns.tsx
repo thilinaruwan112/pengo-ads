@@ -1,9 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { cn } from "@/lib/utils";
 
-export function RecentCampaigns() {
+interface RecentCampaignsProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function RecentCampaigns({ className }: RecentCampaignsProps) {
   return (
-    <Card className="col-span-4 md:col-span-3">
+    <Card className={cn(className)}>
       <CardHeader>
         <CardTitle>Recent Activity</CardTitle>
         <CardDescription>
