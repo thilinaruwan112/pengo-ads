@@ -2,6 +2,8 @@ import { campaigns } from "@/lib/data"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button"
+import { CampaignCard } from "./campaign-card"
+import type { Campaign } from "@/types"
 
 export default function CampaignsPage() {
   return (
@@ -15,7 +17,14 @@ export default function CampaignsPage() {
         </div>
         <Button>Add Campaign</Button>
       </div>
-      <DataTable columns={columns} data={campaigns} />
+      <div className="hidden md:block">
+        <DataTable columns={columns} data={campaigns} />
+      </div>
+      <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {campaigns.map((campaign: Campaign) => (
+            <CampaignCard key={campaign.id} campaign={campaign} />
+        ))}
+      </div>
     </div>
   )
 }

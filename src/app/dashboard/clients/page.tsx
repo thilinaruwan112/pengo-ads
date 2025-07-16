@@ -2,6 +2,8 @@ import { users } from "@/lib/data"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button"
+import type { User } from "@/types"
+import { ClientCard } from "./client-card"
 
 export default function ClientsPage() {
   return (
@@ -15,7 +17,14 @@ export default function ClientsPage() {
         </div>
         <Button>Add Client</Button>
       </div>
-      <DataTable columns={columns} data={users} />
+      <div className="hidden md:block">
+        <DataTable columns={columns} data={users} />
+      </div>
+       <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {users.map((user: User) => (
+            <ClientCard key={user.id} user={user} />
+        ))}
+      </div>
     </div>
   )
 }
