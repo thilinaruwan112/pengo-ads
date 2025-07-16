@@ -26,10 +26,11 @@ export function BottomNav({ client = false }: BottomNavProps) {
   ];
 
   const routes = client ? clientRoutes : adminRoutes;
+  const gridColsClass = client ? "grid-cols-2" : "grid-cols-4";
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-card border-t md:hidden">
-      <div className={`grid h-full max-w-lg grid-cols-${routes.length} mx-auto`}>
+      <div className={cn("grid h-full max-w-lg mx-auto", gridColsClass)}>
         {routes.map((route) => (
           <Link
             key={route.href}
