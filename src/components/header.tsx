@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { UserNav } from "@/components/user-nav";
 import { MainNav } from "@/components/main-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   return (
@@ -37,6 +38,7 @@ export function Header() {
           </div>
         </form>
       </div>
+      <ThemeToggle />
       <UserNav />
     </header>
   );
