@@ -9,7 +9,9 @@ async function getUsers(): Promise<User[]> {
   if (!res.ok) {
     throw new Error('Failed to fetch users')
   }
-  return res.json();
+  const users = await res.json();
+  // Filter for clients only
+  return users.filter((user: User) => user.role === 'client');
 }
 
 
