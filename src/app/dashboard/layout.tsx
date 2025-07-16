@@ -5,6 +5,7 @@ import { MainNav } from "@/components/main-nav";
 import { Header } from "@/components/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/bottom-nav";
 
 export default function DashboardLayout({
   children,
@@ -39,10 +40,11 @@ export default function DashboardLayout({
       </div>
       <div className="flex flex-col">
         <Header />
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background pb-24 md:pb-6">
           {children}
         </main>
       </div>
+      <BottomNav />
     </div>
   );
 }
