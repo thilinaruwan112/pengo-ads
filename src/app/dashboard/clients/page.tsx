@@ -1,11 +1,21 @@
-import { users } from "@/lib/data"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button"
 import type { User } from "@/types"
 import { ClientCard } from "./client-card"
 
-export default function ClientsPage() {
+async function getUsers(): Promise<User[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`, { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error('Failed to fetch users')
+  }
+  return res.json();
+}
+
+
+export default async function ClientsPage() {
+  const users = await getUsers();
+  
   return (
     <div className="container mx-auto py-2">
       <div className="flex justify-between items-center mb-4">

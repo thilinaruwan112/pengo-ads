@@ -1,13 +1,20 @@
-
-import { campaigns } from "@/lib/data"
 import { CampaignCard } from "@/app/dashboard/campaigns/campaign-card"
 import type { Campaign } from "@/types"
 import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
 
-export default function ClientDashboardPage() {
+async function getCampaigns(): Promise<Campaign[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error('Failed to fetch campaigns');
+  }
+  return res.json();
+}
+
+export default async function ClientDashboardPage() {
+    const allCampaigns = await getCampaigns();
     const clientName = "Alice Johnson";
-    const clientCampaigns = campaigns.filter(c => c.client === clientName);
+    const clientCampaigns = allCampaigns.filter(c => c.client === clientName);
 
     const totalReach = clientCampaigns.reduce((sum, camp) => sum + camp.reach, 0);
     const totalImpressions = clientCampaigns.reduce((sum, camp) => sum + camp.impressions, 0);

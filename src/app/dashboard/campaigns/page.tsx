@@ -1,11 +1,25 @@
-import { campaigns } from "@/lib/data"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button"
 import { CampaignCard } from "./campaign-card"
 import type { Campaign } from "@/types"
 
-export default function CampaignsPage() {
+async function getCampaigns(): Promise<Campaign[]> {
+  // Fetch data from your API endpoint.
+  // This is a server component, so we can fetch data directly.
+  // In a real app, you would have this URL in an environment variable.
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error('Failed to fetch data')
+  }
+ 
+  return res.json()
+}
+
+export default async function CampaignsPage() {
+  const campaigns = await getCampaigns();
+
   return (
     <div className="container mx-auto py-2">
       <div className="flex justify-between items-center mb-4">
