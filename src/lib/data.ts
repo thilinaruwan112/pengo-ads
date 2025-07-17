@@ -1,18 +1,19 @@
 import { User, Campaign, Account } from "@/types";
 
 export const users: User[] = [
-  { id: "USR001", name: "Alice Johnson", email: "alice@example.com", role: "client", avatar: "/avatars/01.png", status: "active", adAccountId: "act_1111" },
-  { id: "USR002", name: "Bob Williams", email: "bob@example.com", role: "client", avatar: "/avatars/02.png", status: "active", adAccountId: "act_2222" },
-  { id: "USR003", name: "Charlie Brown", email: "charlie@example.com", role: "client", avatar: "/avatars/03.png", status: "archived" },
-  { id: "USR004", name: "Diana Prince", email: "diana@example.com", role: "client", avatar: "/avatars/04.png", status: "active", adAccountId: "act_4444" },
+  { id: "USR001", name: "Alice Johnson", email: "alice@example.com", role: "client", avatar: "/avatars/01.png", status: "active", adAccountIds: ["act_1111", "act_5555"] },
+  { id: "USR002", name: "Bob Williams", email: "bob@example.com", role: "client", avatar: "/avatars/02.png", status: "active", adAccountIds: ["act_2222"] },
+  { id: "USR003", name: "Charlie Brown", email: "charlie@example.com", role: "client", avatar: "/avatars/03.png", status: "archived", adAccountIds: ["act_3333"] },
+  { id: "USR004", name: "Diana Prince", email: "diana@example.com", role: "client", avatar: "/avatars/04.png", status: "active", adAccountIds: ["act_4444"] },
 ];
 
 export const accounts: Account[] = [
   {
     id: "act_1111",
     name: "Alice Johnson's Account",
-    accessToken: "ALICE_FAKE_TOKEN", // In a real DB, this would be encrypted
+    accessToken: "ALICE_FAKE_TOKEN",
     clientName: "Alice Johnson",
+    companyName: "Alice's Awesome Widgets",
     campaigns: [
       {
         id: "CAM001",
@@ -47,10 +48,35 @@ export const accounts: Account[] = [
     ]
   },
   {
+    id: "act_5555",
+    name: "Alice Johnson's Second Account",
+    accessToken: "ALICE_FAKE_TOKEN_2",
+    clientName: "Alice Johnson",
+    companyName: "Alice's Garden Supplies",
+    campaigns: [
+       {
+        id: "CAM006",
+        name: "Spring Planting Sale",
+        status: "active",
+        reach: 85000,
+        impressions: 320000,
+        conversions: 1500,
+        ctr: 3.1,
+        cpc: 0.90,
+        cpm: 4.10,
+        platform: "Instagram",
+        linked: true,
+        client: "Alice Johnson",
+        description: "Sale on all spring gardening essentials.",
+      },
+    ]
+  },
+  {
     id: "act_2222",
     name: "Bob Williams' Account",
     accessToken: "BOB_FAKE_TOKEN",
     clientName: "Bob Williams",
+    companyName: "Bob's Burger Bar",
     campaigns: [
        {
         id: "CAM002",
@@ -74,6 +100,7 @@ export const accounts: Account[] = [
     name: "Charlie Brown's Account",
     accessToken: "CHARLIE_FAKE_TOKEN",
     clientName: "Charlie Brown",
+    companyName: "Charlie's Cybernetics",
     campaigns: [
       {
         id: "CAM003",
@@ -97,6 +124,7 @@ export const accounts: Account[] = [
     name: "Diana Prince's Account",
     accessToken: "DIANA_FAKE_TOKEN",
     clientName: "Diana Prince",
+    companyName: "Diana's Dazzlers",
     campaigns: [
         {
         id: "CAM004",

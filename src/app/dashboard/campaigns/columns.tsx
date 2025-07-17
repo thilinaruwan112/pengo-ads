@@ -1,3 +1,4 @@
+
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
@@ -79,7 +80,7 @@ export const columns: ColumnDef<Campaign>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Assign client</DropdownMenuItem>
+            <DropdownMenuItem>Assign Company</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

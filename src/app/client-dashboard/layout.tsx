@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { Package2, ArrowLeft } from "lucide-react";
+import { Package2, ArrowLeft, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -8,8 +8,57 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import ClientNav from "./client-nav";
 import { BottomNav } from "@/components/bottom-nav";
+import { accounts, users } from "@/lib/data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import type { User, Account } from "@/types";
+import { redirect } from "next/navigation";
 
-export default function ClientDashboardLayout({
+
+async function getClientUser(
+  clientUserId?: string,
+  clientUserEmail?: string
+): Promise<User | undefined> {
+  if (clientUserId) {
+    return users.find(u => u.id === clientUserId && u.role === 'client');
+  }
+  if (clientUserEmail) {
+    return users.find(u => u.email === clientUserEmail && u.role === 'client');
+  }
+  return undefined;
+}
+
+function CompanySwitcher({ clientAccounts, currentAccountId }: { clientAccounts: Account[], currentAccountId: string }) {
+    const currentAccount = clientAccounts.find(acc => acc.id === currentAccountId);
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                    {currentAccount?.companyName || 'Select Company'}
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+                <DropdownMenuLabel>Switch Company</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {clientAccounts.map(account => (
+                    <DropdownMenuItem key={account.id} asChild>
+                        <Link href={`?adAccountId=${account.id}`}>{account.companyName}</Link>
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+export default async function ClientDashboardLayout({
   children,
   searchParams,
 }: {
@@ -17,7 +66,23 @@ export default function ClientDashboardLayout({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
 
-  const isImpersonating = !!searchParams?.viewAs;
+  const viewAsUserId = searchParams?.viewAs as string | undefined;
+  const adAccountId = searchParams?.adAccountId as string | undefined;
+  const isImpersonating = !!viewAsUserId;
+  
+  const clientUser = await getClientUser(viewAsUserId, viewAsUserId ? undefined : "alice@example.com");
+
+  if (!clientUser) {
+    if (viewAsUserId) redirect('/dashboard/clients');
+    return <div>Error: Client not found.</div>
+  }
+  
+  const clientAccounts = accounts.filter(acc => clientUser.adAccountIds?.includes(acc.id));
+  const hasMultipleAccounts = clientAccounts.length > 1;
+
+  // Determine the current account ID to show
+  // Priority: URL param > First in client's list > undefined
+  const currentAccountId = adAccountId || clientAccounts[0]?.id;
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -53,14 +118,17 @@ export default function ClientDashboardLayout({
               <ClientNav />
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1">
-            {isImpersonating && (
+          <div className="w-full flex-1 flex items-center gap-4">
+             {isImpersonating && (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard/clients">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Admin View
+                        Back to Admin
                     </Link>
                 </Button>
+            )}
+            {hasMultipleAccounts && currentAccountId && (
+                <CompanySwitcher clientAccounts={clientAccounts} currentAccountId={currentAccountId} />
             )}
           </div>
           <ThemeToggle />

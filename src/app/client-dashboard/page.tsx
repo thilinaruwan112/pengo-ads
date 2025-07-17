@@ -3,7 +3,7 @@ import { CampaignCard } from "@/app/dashboard/campaigns/campaign-card"
 import type { Campaign, User } from "@/types"
 import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
-import { users } from "@/lib/data"
+import { users, accounts } from "@/lib/data"
 import { redirect } from "next/navigation"
 
 async function getClientCampaigns(adAccountId: string): Promise<Campaign[]> {
@@ -33,6 +33,7 @@ export default async function ClientDashboardPage({
     searchParams?: { [key: string]: string | string[] | undefined };
 }) {
     const viewAsUserId = searchParams?.viewAs as string | undefined;
+    const adAccountIdFromUrl = searchParams?.adAccountId as string | undefined;
 
     // In a real app, you would get the current user from session/auth
     // For this demo, we check if we are impersonating, otherwise we default to Alice.
@@ -51,18 +52,23 @@ export default async function ClientDashboardPage({
         )
     }
 
-    if (!clientUser.adAccountId) {
+    // Determine which ad account to display
+    // Priority: 1. URL param, 2. First account in user's list
+    const adAccountId = adAccountIdFromUrl || clientUser.adAccountIds?.[0];
+    const currentAccount = accounts.find(acc => acc.id === adAccountId);
+
+    if (!adAccountId || !currentAccount) {
         return (
             <div className="container mx-auto py-2">
                  <div className="mb-6">
                     <h1 className="text-3xl font-bold">Welcome, {clientUser.name}!</h1>
-                    <p className="text-muted-foreground">This client does not have an ad account linked yet.</p>
+                    <p className="text-muted-foreground">This client does not have an ad account linked yet or the account is invalid.</p>
                 </div>
             </div>
         )
     }
 
-    const clientCampaigns = await getClientCampaigns(clientUser.adAccountId);
+    const clientCampaigns = await getClientCampaigns(adAccountId);
 
     const totalReach = clientCampaigns.reduce((sum, camp) => sum + camp.reach, 0);
     const totalImpressions = clientCampaigns.reduce((sum, camp) => sum + camp.impressions, 0);
@@ -73,7 +79,7 @@ export default async function ClientDashboardPage({
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Welcome, {clientUser.name}!</h1>
         <p className="text-muted-foreground">
-            Here&apos;s a summary of your active campaigns.
+            Showing data for <span className="font-semibold text-primary">{currentAccount.companyName}</span>.
         </p>
       </div>
 
@@ -107,7 +113,7 @@ export default async function ClientDashboardPage({
                 ))}
             </div>
         ) : (
-            <p className="text-muted-foreground">No campaigns found for this client.</p>
+            <p className="text-muted-foreground">No campaigns found for this company.</p>
         )}
       </div>
     </div>
