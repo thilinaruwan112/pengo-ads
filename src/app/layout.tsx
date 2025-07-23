@@ -8,7 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'AdVision Dashboard',
+  title: 'PengoAds Dashboard',
   description: 'Track and analyze your Meta ad campaigns with ease.',
   manifest: "/manifest.json",
 };

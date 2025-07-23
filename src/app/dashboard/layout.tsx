@@ -19,22 +19,13 @@ export default function DashboardLayout({
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6 text-primary" />
-              <span className="">AdVision</span>
+              <span className="">PengoAds</span>
             </Link>
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <MainNav />
             </nav>
-          </div>
-          <div className="mt-auto p-4">
-              <Card>
-                  <CardContent className="p-2 pt-4 text-center">
-                    <div className="text-sm font-semibold">Need help?</div>
-                    <p className="text-xs text-muted-foreground mt-1 mb-2">Contact our support team</p>
-                    <Button size="sm" className="w-full">Contact Support</Button>
-                  </CardContent>
-              </Card>
           </div>
         </div>
       </div>

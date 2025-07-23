@@ -44,7 +44,7 @@ export function SettingsForm({ isClient = false }: SettingsFormProps) {
 
   const defaultValues: Partial<SettingsFormValues> = {
     name: isClient ? "Alice Johnson" : "Admin User",
-    email: isClient ? "alice@example.com" : "admin@advision.com",
+    email: isClient ? "alice@example.com" : "admin@pengoads.com",
     notifications: {
       performanceReports: true,
       securityAlerts: true,

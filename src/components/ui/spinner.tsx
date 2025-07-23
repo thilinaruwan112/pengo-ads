@@ -26,7 +26,7 @@ const PenguinIcon = ({ className }: { className?: string }) => (
 
 export const Spinner = ({ className }: { className?: string }) => {
   return (
-    <PenguinIcon className={cn("h-8 w-8 animate-spin text-primary", className)} />
+    <PenguinIcon className={cn("h-8 w-8 animate-bounce text-primary", className)} />
   );
 };
 

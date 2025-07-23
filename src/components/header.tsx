@@ -21,7 +21,7 @@ export function Header() {
         <SheetContent side="left" className="flex flex-col">
           <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold mb-4">
             <Package2 className="h-6 w-6" />
-            <span className="">AdVision</span>
+            <span className="">PengoAds</span>
           </Link>
           <MainNav />
         </SheetContent>

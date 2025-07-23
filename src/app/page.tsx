@@ -29,8 +29,8 @@ export default function LoginPage() {
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Image src="/logo.svg" alt="AdVision Logo" width={40} height={40} />
-              <h1 className="text-3xl font-bold">AdVision</h1>
+              <Image src="/logo.svg" alt="PengoAds Logo" width={40} height={40} />
+              <h1 className="text-3xl font-bold">PengoAds</h1>
             </div>
             <p className="text-balance text-muted-foreground">
               Enter your email below to login to your account

@@ -21,7 +21,7 @@ export function UserNav() {
 
   const user = {
     name: isClient ? "Alice Johnson" : "Admin",
-    email: isClient ? "alice@example.com" : "admin@advision.com",
+    email: isClient ? "alice@example.com" : "admin@pengoads.com",
     fallback: isClient ? "AJ" : "AD",
   }
 
