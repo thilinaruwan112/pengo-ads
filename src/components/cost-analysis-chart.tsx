@@ -5,7 +5,7 @@ import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Ca
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card"
 import { cn } from "@/lib/utils"
 
-const data = [
+const defaultData = [
   { date: "Jan", cost: 500, conversions: 50 },
   { date: "Feb", cost: 600, conversions: 70 },
   { date: "Mar", cost: 450, conversions: 60 },
@@ -14,9 +14,11 @@ const data = [
   { date: "Jun", cost: 800, conversions: 120 },
 ]
 
-interface CostAnalysisChartProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CostAnalysisChartProps extends React.HTMLAttributes<HTMLDivElement> {
+    data?: { date: string; cost: number; conversions: number }[];
+}
 
-export function CostAnalysisChart({ className }: CostAnalysisChartProps) {
+export function CostAnalysisChart({ className, data = defaultData }: CostAnalysisChartProps) {
   return (
     <Card className={cn(className)}>
       <CardHeader>

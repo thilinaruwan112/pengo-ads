@@ -5,13 +5,27 @@ import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
 import { users, accounts } from "@/lib/data"
 import { redirect } from "next/navigation"
-import { CreateCampaignDialog } from "@/app/dashboard/campaigns/create-campaign-dialog"
+import { CreateCampaignDialog } from "@/components/create-post-dialog"
+import { OverviewChart } from "@/components/overview-chart"
+import { PlatformPerformanceChart } from "@/components/platform-performance-chart"
+import { CostAnalysisChart } from "@/components/cost-analysis-chart"
+import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, subMonths } from 'date-fns';
 
 async function getClientCampaigns(adAccountId: string): Promise<Campaign[]> {
   // In a real app, you would fetch this from your API
   const account = accounts.find(acc => acc.id === adAccountId);
-  return account?.campaigns || [];
+  if (!account) return [];
+  
+  // This is returning all campaigns for the account, not just one.
+  const campaigns = account.campaigns.map(c => ({
+    ...c,
+    client: account.clientName,
+    companyName: account.companyName,
+  }));
+  
+  return campaigns || [];
 }
+
 
 async function getClientUser(
   clientUserId?: string,
@@ -26,22 +40,90 @@ async function getClientUser(
   return undefined;
 }
 
-function getLatestPerformance(campaigns: Campaign[]): { totalReach: number, totalImpressions: number, totalResults: number } {
+function getAggregatePerformance(campaigns: Campaign[]): { totalReach: number, totalImpressions: number, totalResults: number } {
     let totalReach = 0;
     let totalImpressions = 0;
     let totalResults = 0;
 
     campaigns.forEach(campaign => {
-        if (campaign.dailyPerformance && campaign.dailyPerformance.length > 0) {
-            const latest = campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-            totalReach += latest.reach;
-            totalImpressions += latest.impressions;
-            totalResults += latest.results;
-        }
+        // Sum up all daily records for each campaign
+        campaign.dailyPerformance?.forEach(record => {
+            totalReach += record.reach;
+            totalImpressions += record.impressions;
+            totalResults += record.results;
+        });
     });
 
     return { totalReach, totalImpressions, totalResults };
 }
+
+function prepareOverviewData(campaigns: Campaign[]): { name: string; reach: number; impressions: number }[] {
+    const monthlyData: { [key: string]: { reach: number; impressions: number } } = {};
+
+    campaigns.forEach(campaign => {
+        campaign.dailyPerformance.forEach(record => {
+            const month = format(parseISO(record.date), 'MMM');
+            if (!monthlyData[month]) {
+                monthlyData[month] = { reach: 0, impressions: 0 };
+            }
+            monthlyData[month].reach += record.reach;
+            monthlyData[month].impressions += record.impressions;
+        });
+    });
+
+    const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    return monthOrder.map(monthName => ({
+        name: monthName,
+        reach: monthlyData[monthName]?.reach || 0,
+        impressions: monthlyData[monthName]?.impressions || 0
+    })).filter(d => d.reach > 0 || d.impressions > 0);
+}
+
+
+function preparePlatformData(campaigns: Campaign[]): { name: string; value: number; color: string }[] {
+    const platformData: { [key: string]: number } = {};
+
+    campaigns.forEach(campaign => {
+        const totalResults = campaign.dailyPerformance.reduce((sum, record) => sum + record.results, 0);
+        if (!platformData[campaign.platform]) {
+            platformData[campaign.platform] = 0;
+        }
+        platformData[campaign.platform] += totalResults;
+    });
+    
+    const chartColors = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
+
+    return Object.entries(platformData).map(([name, value], index) => ({
+        name,
+        value,
+        color: chartColors[index % chartColors.length]
+    }));
+}
+
+function prepareCostData(campaigns: Campaign[]): { date: string; cost: number; conversions: number }[] {
+    const monthlyData: { [key: string]: { cost: number; conversions: number } } = {};
+
+    campaigns.forEach(campaign => {
+        campaign.dailyPerformance.forEach(record => {
+            const month = format(parseISO(record.date), 'MMM');
+            if (!monthlyData[month]) {
+                monthlyData[month] = { cost: 0, conversions: 0 };
+            }
+            monthlyData[month].cost += record.amountSpent || 0;
+            monthlyData[month].conversions += record.results;
+        });
+    });
+
+    const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    return monthOrder.map(monthName => ({
+        date: monthName,
+        cost: monthlyData[monthName]?.cost || 0,
+        conversions: monthlyData[monthName]?.conversions || 0,
+    })).filter(d => d.cost > 0 || d.conversions > 0);
+}
+
 
 export default async function ClientDashboardPage({
     searchParams,
@@ -51,15 +133,10 @@ export default async function ClientDashboardPage({
     const viewAsUserId = searchParams?.viewAs as string | undefined;
     const adAccountIdFromUrl = searchParams?.adAccountId as string | undefined;
 
-    // In a real app, you would get the current user from session/auth
-    // For this demo, we check if we are impersonating, otherwise we default to Alice.
     const clientUser = await getClientUser(viewAsUserId, viewAsUserId ? undefined : "alice@example.com");
 
     if (!clientUser) {
-        // If we are trying to impersonate an invalid user, redirect to the admin dashboard
-        if (viewAsUserId) {
-            redirect("/dashboard/clients");
-        }
+        if (viewAsUserId) redirect("/dashboard/clients");
         return (
              <div className="container mx-auto py-2">
                 <h1 className="text-2xl font-bold">Error</h1>
@@ -68,8 +145,6 @@ export default async function ClientDashboardPage({
         )
     }
 
-    // Determine which ad account to display
-    // Priority: 1. URL param, 2. First account in user's list
     const adAccountId = adAccountIdFromUrl || clientUser.adAccountIds?.[0];
     const currentAccount = accounts.find(acc => acc.id === adAccountId);
     const clientAccounts = accounts.filter(acc => clientUser.adAccountIds?.includes(acc.id));
@@ -86,7 +161,11 @@ export default async function ClientDashboardPage({
     }
 
     const clientCampaigns = await getClientCampaigns(adAccountId);
-    const { totalReach, totalImpressions, totalResults } = getLatestPerformance(clientCampaigns);
+    const { totalReach, totalImpressions, totalResults } = getAggregatePerformance(clientCampaigns);
+
+    const overviewData = prepareOverviewData(clientCampaigns);
+    const platformData = preparePlatformData(clientCampaigns);
+    const costData = prepareCostData(clientCampaigns);
 
   return (
     <div className="container mx-auto py-2">
@@ -104,22 +183,36 @@ export default async function ClientDashboardPage({
         <KpiCard
           title="Total Reach"
           value={new Intl.NumberFormat().format(totalReach)}
-          description="Latest daily total"
+          description="All-time total reach"
           Icon={Users}
         />
         <KpiCard
           title="Impressions"
           value={new Intl.NumberFormat().format(totalImpressions)}
-          description="Latest daily total"
+          description="All-time total impressions"
           Icon={Eye}
         />
         <KpiCard
           title="Results"
           value={new Intl.NumberFormat().format(totalResults)}
-          description="Latest daily total"
+          description="All-time total results"
           Icon={Activity}
         />
       </div>
+      
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3 mb-6">
+        <OverviewChart 
+            className="xl:col-span-2" 
+            data={overviewData} 
+            title="Monthly Performance"
+            description="Aggregated reach and impressions across all campaigns."
+        />
+        <PlatformPerformanceChart data={platformData} />
+      </div>
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-1 mb-6">
+         <CostAnalysisChart className="xl:col-span-3" data={costData} />
+      </div>
+
 
       <div>
         <h2 className="text-2xl font-bold mb-4">Your Campaigns</h2>

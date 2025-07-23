@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,9 @@ interface CreatePostDialogProps {
     postToEdit?: Post;
     isOpen?: boolean;
     setIsOpen?: (open: boolean) => void;
+    isClient?: boolean;
+    clientAccountId?: string;
+    clientAccounts?: Account[];
 }
 
 const statusConfig = {
@@ -38,7 +41,7 @@ const statusConfig = {
   'posted': { label: 'Posted', icon: Check },
 };
 
-export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setIsOpen }: CreatePostDialogProps) {
+export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setIsOpen, isClient, clientAccountId }: CreatePostDialogProps) {
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +56,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
-  const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>();
+  const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>(isClient ? clientAccountId : undefined);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | undefined>();
   const [status, setStatus] = useState<Post['status']>('needs-approval');
 
@@ -90,7 +93,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
     setContent("");
     setMediaUrl("");
     setScheduledDate("");
-    setSelectedAccountId(undefined);
+    setSelectedAccountId(isClient ? clientAccountId : undefined);
     setSelectedCampaignId(undefined);
     setStatus("needs-approval");
   };
@@ -146,7 +149,8 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
   
   const isSaveDisabled = isSubmitting || !content || !scheduledDate || !selectedAccountId || !selectedCampaignId;
 
-  const trigger = !isEditMode ? <Button>Create Post</Button> : null;
+  const triggerText = isClient ? 'Create Post' : 'Create Post';
+  const trigger = !isEditMode ? <Button>{triggerText}</Button> : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -161,7 +165,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
         <div className="grid gap-4 py-4">
             <div className="space-y-2">
                 <Label htmlFor="account-id">Client Account</Label>
-                 <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+                 <Select value={selectedAccountId} onValueChange={setSelectedAccountId} disabled={isClient}>
                     <SelectTrigger id="account-id">
                         <SelectValue placeholder="Select an account" />
                     </SelectTrigger>
