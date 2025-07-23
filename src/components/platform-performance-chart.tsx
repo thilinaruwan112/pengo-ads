@@ -19,19 +19,20 @@ const defaultData = [
   { name: "Other", value: 200, color: "hsl(var(--chart-3))" },
 ]
 
-interface PlatformPerformanceChartProps {
+interface PlatformPerformanceChartProps  extends React.HTMLAttributes<HTMLDivElement> {
     data?: { name: string; value: number; color: string }[];
 }
 
-export function PlatformPerformanceChart({ data = defaultData }: PlatformPerformanceChartProps) {
+export function PlatformPerformanceChart({ className, data }: PlatformPerformanceChartProps) {
+  const chartData = data && data.length > 0 ? data : defaultData;
   return (
-    <Card>
+    <Card className={cn(className)}>
       <CardHeader>
         <CardTitle>Platform Performance</CardTitle>
         <CardDescription>Results by platform</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
+        <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Tooltip
                 contentStyle={{
@@ -41,16 +42,16 @@ export function PlatformPerformanceChart({ data = defaultData }: PlatformPerform
             />
             <Legend layout="vertical" align="right" verticalAlign="middle" iconType="circle" />
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               labelLine={false}
               label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
+              outerRadius={100}
               fill="#8884d8"
               dataKey="value"
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>

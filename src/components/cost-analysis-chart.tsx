@@ -18,7 +18,8 @@ interface CostAnalysisChartProps extends React.HTMLAttributes<HTMLDivElement> {
     data?: { date: string; cost: number; conversions: number }[];
 }
 
-export function CostAnalysisChart({ className, data = defaultData }: CostAnalysisChartProps) {
+export function CostAnalysisChart({ className, data }: CostAnalysisChartProps) {
+  const chartData = data && data.length > 0 ? data : defaultData;
   return (
     <Card className={cn(className)}>
       <CardHeader>
@@ -27,7 +28,7 @@ export function CostAnalysisChart({ className, data = defaultData }: CostAnalysi
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
+          <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" stroke="#888888" fontSize={12} />
             <YAxis yAxisId="left" stroke="hsl(var(--primary))" fontSize={12} tickFormatter={(value) => `$${value}`} />

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface RecentCampaignsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+// This component is now static as dynamic data is shown in the main charts.
 export function RecentCampaigns({ className }: RecentCampaignsProps) {
   return (
     <Card className={cn(className)}>

@@ -26,7 +26,8 @@ interface OverviewChartProps extends React.HTMLAttributes<HTMLDivElement> {
     description?: string;
 }
 
-export function OverviewChart({ className, data = defaultData, title = "Overview", description = "Monthly campaign reach and impressions." }: OverviewChartProps) {
+export function OverviewChart({ className, data, title = "Overview", description = "Monthly campaign reach and impressions." }: OverviewChartProps) {
+  const chartData = data && data.length > 0 ? data : defaultData;
   return (
     <Card className={cn(className)}>
         <CardHeader>
@@ -35,7 +36,7 @@ export function OverviewChart({ className, data = defaultData, title = "Overview
         </CardHeader>
         <CardContent className="pl-2">
             <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={data}>
+                <BarChart data={chartData}>
                     <XAxis
                     dataKey="name"
                     stroke="#888888"
