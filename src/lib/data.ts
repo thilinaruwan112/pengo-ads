@@ -19,76 +19,62 @@ export const accounts: Account[] = [
         id: "CAM001",
         name: "Summer Sale 2024",
         status: "active",
-        reach: 120540,
-        impressions: 550345,
-        conversions: 2450,
-        ctr: 2.5,
-        cpc: 0.75,
-        cpm: 3.50,
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "A campaign to promote our summer collection with discounts up to 50%.",
+        dailyPerformance: [
+          { date: "2024-07-28", reach: 120540, impressions: 550345, conversions: 2450, ctr: 2.5, cpc: 0.75, cpm: 3.50 },
+          { date: "2024-07-27", reach: 119500, impressions: 540100, conversions: 2400, ctr: 2.4, cpc: 0.76, cpm: 3.55 },
+        ]
       },
       {
         id: "CAM005",
         name: "Low Performer Example",
         status: "active",
-        reach: 1500,
-        impressions: 5000,
-        conversions: 10,
-        ctr: 0.5,
-        cpc: 3.00,
-        cpm: 8.00,
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "This is a sample low-performing campaign.",
+        dailyPerformance: [
+           { date: "2024-07-28", reach: 1500, impressions: 5000, conversions: 10, ctr: 0.5, cpc: 3.00, cpm: 8.00 },
+        ]
       },
        {
         id: "CAM007",
         name: "SR_WEDDING",
         status: "active",
-        reach: 718870,
-        impressions: 171561,
-        conversions: 191,
-        ctr: 0.53,
-        cpc: 10.51,
-        cpm: 8.75,
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        dailyPerformance: [
+          { date: "2024-07-28", reach: 718870, impressions: 171561, conversions: 191, ctr: 0.53, cpc: 10.51, cpm: 8.75 },
+        ]
       },
       {
         id: "CAM008",
         name: "SR_WEDDING",
         status: "active",
-        reach: 9136,
-        impressions: 10291,
-        conversions: 60,
-        ctr: 1.66,
-        cpc: 32.93,
-        cpm: 34.31,
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        dailyPerformance: [
+          { date: "2024-07-28", reach: 9136, impressions: 10291, conversions: 60, ctr: 1.66, cpc: 32.93, cpm: 34.31 }
+        ]
       },
       {
         id: "CAM009",
         name: "SR_WEDDING",
         status: "active",
-        reach: 179781,
-        impressions: 395925,
-        conversions: 331,
-        ctr: 0.14,
-        cpc: 10.45,
-        cpm: 3.65,
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        dailyPerformance: [
+            { date: "2024-07-28", reach: 179781, impressions: 395925, conversions: 331, ctr: 0.14, cpc: 10.45, cpm: 3.65 }
+        ]
       }
     ]
   },
@@ -103,16 +89,13 @@ export const accounts: Account[] = [
         id: "CAM006",
         name: "Spring Planting Sale",
         status: "active",
-        reach: 85000,
-        impressions: 320000,
-        conversions: 1500,
-        ctr: 3.1,
-        cpc: 0.90,
-        cpm: 4.10,
         platform: "Instagram",
         linked: true,
         client: "Alice Johnson",
         description: "Sale on all spring gardening essentials.",
+        dailyPerformance: [
+            { date: "2024-07-28", reach: 85000, impressions: 320000, conversions: 1500, ctr: 3.1, cpc: 0.90, cpm: 4.10 }
+        ]
       },
     ]
   },
@@ -127,16 +110,13 @@ export const accounts: Account[] = [
         id: "CAM002",
         name: "New Product Launch",
         status: "paused",
-        reach: 56780,
-        impressions: 210890,
-        conversions: 890,
-        ctr: 1.8,
-        cpc: 1.20,
-        cpm: 5.20,
         platform: "Instagram",
         linked: true,
         client: "Bob Williams",
         description: "Launching the new X-series gadget.",
+        dailyPerformance: [
+            { date: "2024-07-28", reach: 56780, impressions: 210890, conversions: 890, ctr: 1.8, cpc: 1.20, cpm: 5.20 }
+        ]
       },
     ]
   },
@@ -151,16 +131,13 @@ export const accounts: Account[] = [
         id: "CAM003",
         name: "Brand Awareness Q3",
         status: "active",
-        reach: 350000,
-        impressions: 1200000,
-        conversions: 120,
-        ctr: 0.8,
-        cpc: 0.25,
-        cpm: 1.50,
         platform: "Facebook",
         linked: false,
         client: "Charlie Brown",
         description: "General brand awareness campaign.",
+        dailyPerformance: [
+            { date: "2024-07-28", reach: 350000, impressions: 1200000, conversions: 120, ctr: 0.8, cpc: 0.25, cpm: 1.50 }
+        ]
       },
     ]
   },
@@ -175,16 +152,13 @@ export const accounts: Account[] = [
         id: "CAM004",
         name: "Holiday Giveaway",
         status: "archived",
-        reach: 95000,
-        impressions: 450000,
-        conversions: 5600,
-        ctr: 4.2,
-        cpc: 0.50,
-        cpm: 2.80,
         platform: "Instagram",
         linked: true,
         client: "Diana Prince",
         description: "A giveaway contest to boost engagement.",
+        dailyPerformance: [
+            { date: "2024-07-28", reach: 95000, impressions: 450000, conversions: 5600, ctr: 4.2, cpc: 0.50, cpm: 2.80 }
+        ]
       },
     ]
   }

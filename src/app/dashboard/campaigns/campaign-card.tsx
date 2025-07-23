@@ -1,7 +1,7 @@
 
 "use client"
 
-import type { Campaign } from "@/types"
+import type { Campaign, DailyPerformance } from "@/types"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,9 +20,19 @@ interface CampaignCardProps {
   campaign: Campaign
 }
 
+function getLatestPerformance(campaign: Campaign): DailyPerformance | null {
+    if (!campaign.dailyPerformance || campaign.dailyPerformance.length === 0) {
+        return null;
+    }
+    // Sort by date descending and return the first element
+    return campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+}
+
+
 export function CampaignCard({ campaign }: CampaignCardProps) {
   const status = campaign.status;
   const variant = status === "active" ? "default" : status === "paused" ? "secondary" : "destructive";
+  const latestPerformance = getLatestPerformance(campaign);
 
   return (
     <Card>
@@ -39,7 +49,10 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                <DropdownMenuItem asChild>
-                <Link href={`/dashboard/campaigns/${campaign.id}/edit`}>Edit</Link>
+                <Link href={`/dashboard/campaigns/${campaign.id}/edit`}>Edit / View Details</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/campaigns/${campaign.id}/add-record`}>Add Daily Record</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(campaign.id)}
@@ -47,7 +60,6 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
                 Copy campaign ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View details</DropdownMenuItem>
               <DropdownMenuItem>Assign client</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -59,14 +71,20 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           <span className="text-sm text-muted-foreground">Status</span>
           <Badge variant={variant} className="capitalize">{campaign.status}</Badge>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Impressions</span>
-          <span className="font-medium">{new Intl.NumberFormat().format(campaign.impressions)}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">CTR</span>
-          <span className="font-medium">{campaign.ctr.toFixed(2)}%</span>
-        </div>
+        {latestPerformance ? (
+            <>
+                <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Impressions</span>
+                <span className="font-medium">{new Intl.NumberFormat().format(latestPerformance.impressions)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">CTR</span>
+                <span className="font-medium">{latestPerformance.ctr.toFixed(2)}%</span>
+                </div>
+            </>
+        ) : (
+            <div className="text-sm text-muted-foreground">No performance data.</div>
+        )}
       </CardContent>
     </Card>
   )

@@ -16,7 +16,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import type { Campaign } from "@/types"
+import type { Campaign, DailyPerformance } from "@/types"
+
+function getLatestPerformance(campaign: Campaign): DailyPerformance | null {
+    if (!campaign.dailyPerformance || campaign.dailyPerformance.length === 0) {
+        return null;
+    }
+    return campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+}
 
 export const columns: ColumnDef<Campaign>[] = [
   {
@@ -40,7 +47,10 @@ export const columns: ColumnDef<Campaign>[] = [
     accessorKey: "impressions",
     header: "Impressions",
     cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("impressions"))
+        const campaign = row.original;
+        const latest = getLatestPerformance(campaign);
+        if (!latest) return <div className="text-left">-</div>;
+        const amount = latest.impressions;
         return <div className="text-left font-medium">{new Intl.NumberFormat().format(amount)}</div>
     },
   },
@@ -48,7 +58,10 @@ export const columns: ColumnDef<Campaign>[] = [
     accessorKey: "ctr",
     header: "CTR",
     cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("ctr"))
+        const campaign = row.original;
+        const latest = getLatestPerformance(campaign);
+        if (!latest) return <div className="text-left">-</div>;
+        const amount = latest.ctr;
         return <div className="text-left font-medium">{amount.toFixed(2)}%</div>
     },
   },
@@ -75,7 +88,10 @@ export const columns: ColumnDef<Campaign>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-                <Link href={`/dashboard/campaigns/${campaign.id}/edit`}>Edit</Link>
+                <Link href={`/dashboard/campaigns/${campaign.id}/edit`}>Edit / View Details</Link>
+            </DropdownMenuItem>
+             <DropdownMenuItem asChild>
+                <Link href={`/dashboard/campaigns/${campaign.id}/add-record`}>Add Daily Record</Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(campaign.id)}
@@ -83,7 +99,6 @@ export const columns: ColumnDef<Campaign>[] = [
               Copy campaign ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
             <DropdownMenuItem>Assign Company</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

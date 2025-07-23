@@ -1,6 +1,6 @@
 
 import { CampaignCard } from "@/app/dashboard/campaigns/campaign-card"
-import type { Campaign, User, Account } from "@/types"
+import type { Campaign, User, Account, DailyPerformance } from "@/types"
 import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
 import { users, accounts } from "@/lib/data"
@@ -24,6 +24,23 @@ async function getClientUser(
     return users.find(u => u.email === clientUserEmail && u.role === 'client');
   }
   return undefined;
+}
+
+function getLatestPerformance(campaigns: Campaign[]): { totalReach: number, totalImpressions: number, totalConversions: number } {
+    let totalReach = 0;
+    let totalImpressions = 0;
+    let totalConversions = 0;
+
+    campaigns.forEach(campaign => {
+        if (campaign.dailyPerformance && campaign.dailyPerformance.length > 0) {
+            const latest = campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+            totalReach += latest.reach;
+            totalImpressions += latest.impressions;
+            totalConversions += latest.conversions;
+        }
+    });
+
+    return { totalReach, totalImpressions, totalConversions };
 }
 
 export default async function ClientDashboardPage({
@@ -69,10 +86,7 @@ export default async function ClientDashboardPage({
     }
 
     const clientCampaigns = await getClientCampaigns(adAccountId);
-
-    const totalReach = clientCampaigns.reduce((sum, camp) => sum + camp.reach, 0);
-    const totalImpressions = clientCampaigns.reduce((sum, camp) => sum + camp.impressions, 0);
-    const totalConversions = clientCampaigns.reduce((sum, camp) => sum + camp.conversions, 0);
+    const { totalReach, totalImpressions, totalConversions } = getLatestPerformance(clientCampaigns);
 
   return (
     <div className="container mx-auto py-2">
@@ -90,19 +104,19 @@ export default async function ClientDashboardPage({
         <KpiCard
           title="Total Reach"
           value={new Intl.NumberFormat().format(totalReach)}
-          description="Across all your campaigns"
+          description="Latest daily total"
           Icon={Users}
         />
         <KpiCard
           title="Impressions"
           value={new Intl.NumberFormat().format(totalImpressions)}
-          description="Total views on your ads"
+          description="Latest daily total"
           Icon={Eye}
         />
         <KpiCard
           title="Conversions"
           value={new Intl.NumberFormat().format(totalConversions)}
-          description="Total successful actions"
+          description="Latest daily total"
           Icon={Activity}
         />
       </div>

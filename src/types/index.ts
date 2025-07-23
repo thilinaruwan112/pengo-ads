@@ -8,20 +8,25 @@ export type User = {
   adAccountIds?: string[]; // Link to one or more ad accounts
 };
 
-export type Campaign = {
-  id: string;
-  name: string;
-  status: "active" | "paused" | "archived";
+export type DailyPerformance = {
+  date: string; // YYYY-MM-DD
   reach: number;
   impressions: number;
   conversions: number;
   ctr: number;
   cpc: number;
   cpm: number;
+};
+
+export type Campaign = {
+  id: string;
+  name: string;
+  status: "active" | "paused" | "archived";
   platform: "Facebook" | "Instagram";
   linked: boolean;
   client?: string; // Client's name
   description: string;
+  dailyPerformance: DailyPerformance[];
 };
 
 export type Account = {
