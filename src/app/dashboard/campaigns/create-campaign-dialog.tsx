@@ -18,15 +18,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { accounts } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Campaign } from "@/types";
+import type { Campaign, Account } from "@/types";
 import { useRouter } from "next/navigation";
 
-export function CreateCampaignDialog() {
+interface CreateCampaignDialogProps {
+    isClient?: boolean;
+    clientAccountId?: string;
+    clientAccounts?: Account[];
+}
+
+export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts = accounts }: CreateCampaignDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<string>("");
+  const [selectedAccount, setSelectedAccount] = useState<string | undefined>(clientAccountId);
   const [status, setStatus] = useState<Campaign['status']>('active');
   const [platform, setPlatform] = useState<Campaign['platform']>('Facebook');
   const [reach, setReach] = useState("");
@@ -38,6 +44,10 @@ export function CreateCampaignDialog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { toast } = useToast();
+  
+  const handleAccountChange = (accountId: string) => {
+    setSelectedAccount(accountId);
+  }
 
   const handleSave = async () => {
     setIsSubmitting(true);
@@ -73,7 +83,7 @@ export function CreateCampaignDialog() {
         setOpen(false);
         setName("");
         setDescription("");
-        setSelectedAccount("");
+        setSelectedAccount(isClient ? clientAccountId : "");
         setStatus("active");
         setPlatform("Facebook");
         setReach("");
@@ -135,23 +145,25 @@ export function CreateCampaignDialog() {
                 placeholder="A compelling, short description for the ad copy."
                 />
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="client-account" className="text-right">
-                    Client
-                </Label>
-                <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                    <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select an account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {accounts.map(acc => (
-                            <SelectItem key={acc.id} value={acc.id}>
-                                {acc.companyName} ({acc.clientName})
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
+             {!isClient && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="client-account" className="text-right">
+                        Client
+                    </Label>
+                    <Select value={selectedAccount} onValueChange={handleAccountChange}>
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select an account" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {clientAccounts.map(acc => (
+                                <SelectItem key={acc.id} value={acc.id}>
+                                    {acc.companyName} ({acc.clientName})
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="platform" className="text-right">
                     Platform

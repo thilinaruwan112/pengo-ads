@@ -1,10 +1,11 @@
 
 import { CampaignCard } from "@/app/dashboard/campaigns/campaign-card"
-import type { Campaign, User } from "@/types"
+import type { Campaign, User, Account } from "@/types"
 import { KpiCard } from "@/components/kpi-card"
 import { Activity, Eye, Users } from "lucide-react"
 import { users, accounts } from "@/lib/data"
 import { redirect } from "next/navigation"
+import { CreateCampaignDialog } from "@/app/dashboard/campaigns/create-campaign-dialog"
 
 async function getClientCampaigns(adAccountId: string): Promise<Campaign[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns?adAccountId=${adAccountId}`, { cache: 'no-store' });
@@ -56,6 +57,7 @@ export default async function ClientDashboardPage({
     // Priority: 1. URL param, 2. First account in user's list
     const adAccountId = adAccountIdFromUrl || clientUser.adAccountIds?.[0];
     const currentAccount = accounts.find(acc => acc.id === adAccountId);
+    const clientAccounts = accounts.filter(acc => clientUser.adAccountIds?.includes(acc.id));
 
     if (!adAccountId || !currentAccount) {
         return (
@@ -76,11 +78,14 @@ export default async function ClientDashboardPage({
 
   return (
     <div className="container mx-auto py-2">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Welcome, {clientUser.name}!</h1>
-        <p className="text-muted-foreground">
-            Showing data for <span className="font-semibold text-primary">{currentAccount.companyName}</span>.
-        </p>
+      <div className="flex justify-between items-start mb-6">
+        <div>
+            <h1 className="text-3xl font-bold">Welcome, {clientUser.name}!</h1>
+            <p className="text-muted-foreground">
+                Showing data for <span className="font-semibold text-primary">{currentAccount.companyName}</span>.
+            </p>
+        </div>
+        <CreateCampaignDialog isClient={true} clientAccountId={adAccountId} clientAccounts={clientAccounts} />
       </div>
 
        <div className="grid gap-4 mb-6 sm:grid-cols-2 xl:grid-cols-3">
