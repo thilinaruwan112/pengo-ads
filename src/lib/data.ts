@@ -23,9 +23,17 @@ export const accounts: Account[] = [
         linked: true,
         client: "Alice Johnson",
         description: "A campaign to promote our summer collection with discounts up to 50%.",
+        age: "18-65+",
+        gender: "All",
+        pageName: "Alice's Awesome Page",
+        attributionSetting: "7-day click or 1-day view",
+        resultType: "Website purchases",
+        currency: "USD",
+        startDate: "2024-07-01",
+        endDate: "2024-08-31",
         dailyPerformance: [
-          { date: "2024-07-28", reach: 120540, impressions: 550345, conversions: 2450, ctr: 2.5, cpc: 0.75, cpm: 3.50 },
-          { date: "2024-07-27", reach: 119500, impressions: 540100, conversions: 2400, ctr: 2.4, cpc: 0.76, cpm: 3.55 },
+          { date: "2024-07-28", reach: 120540, impressions: 550345, results: 2450, ctr: 2.5, cpc: 0.75, cpm: 3.50, frequency: 4.57, amountSpent: 4127.59, costPerResult: 1.68, linkClicks: 13758 },
+          { date: "2024-07-27", reach: 119500, impressions: 540100, results: 2400, ctr: 2.4, cpc: 0.76, cpm: 3.55, frequency: 4.52, amountSpent: 4104.76, costPerResult: 1.71, linkClicks: 12962 },
         ]
       },
       {
@@ -36,44 +44,73 @@ export const accounts: Account[] = [
         linked: true,
         client: "Alice Johnson",
         description: "This is a sample low-performing campaign.",
+        age: "25-45",
+        gender: "All",
+        pageName: "Alice's Awesome Page",
+        attributionSetting: "7-day click or 1-day view",
+        resultType: "Leads",
+        currency: "USD",
+        startDate: "2024-07-15",
+        endDate: "2024-08-15",
         dailyPerformance: [
-           { date: "2024-07-28", reach: 1500, impressions: 5000, conversions: 10, ctr: 0.5, cpc: 3.00, cpm: 8.00 },
+           { date: "2024-07-28", reach: 1500, impressions: 5000, results: 10, ctr: 0.5, cpc: 3.00, cpm: 8.00, frequency: 3.33, amountSpent: 40.00, costPerResult: 4.00, linkClicks: 25 },
         ]
       },
        {
         id: "CAM007",
-        name: "SR_WEDDING",
+        name: "SR_WEDDING_Reach",
         status: "active",
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        age: "24-35",
+        gender: "Female",
+        pageName: "Serene Weddings",
+        attributionSetting: "1-day view",
+        resultType: "Reach",
+        currency: "LKR",
+        startDate: "2024-06-01",
         dailyPerformance: [
-          { date: "2024-07-28", reach: 718870, impressions: 171561, conversions: 191, ctr: 0.53, cpc: 10.51, cpm: 8.75 },
+          { date: "2024-07-28", reach: 718870, impressions: 171561, results: 191, ctr: 0.53, cpc: 10.51, cpm: 8.75, amountSpent: 1501.16, costPerResult: 7.86, linkClicks: 909 },
         ]
       },
       {
         id: "CAM008",
-        name: "SR_WEDDING",
+        name: "SR_WEDDING_Leads",
         status: "active",
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        age: "24-35",
+        gender: "Female",
+        pageName: "Serene Weddings",
+        attributionSetting: "7-day click",
+        resultType: "Leads",
+        currency: "LKR",
+        startDate: "2024-06-01",
         dailyPerformance: [
-          { date: "2024-07-28", reach: 9136, impressions: 10291, conversions: 60, ctr: 1.66, cpc: 32.93, cpm: 34.31 }
+          { date: "2024-07-28", reach: 9136, impressions: 10291, results: 60, ctr: 1.66, cpc: 32.93, cpm: 34.31, amountSpent: 1975.80, costPerResult: 32.93, linkClicks: 171 }
         ]
       },
       {
         id: "CAM009",
-        name: "SR_WEDDING",
+        name: "SR_WEDDING_Conversions",
         status: "active",
         platform: "Facebook",
         linked: true,
         client: "Alice Johnson",
         description: "Wedding services promotion campaign.",
+        age: "24-35",
+        gender: "Female",
+        pageName: "Serene Weddings",
+        attributionSetting: "7-day click or 1-day view",
+        resultType: "Conversions",
+        currency: "LKR",
+        startDate: "2024-06-01",
         dailyPerformance: [
-            { date: "2024-07-28", reach: 179781, impressions: 395925, conversions: 331, ctr: 0.14, cpc: 10.45, cpm: 3.65 }
+            { date: "2024-07-28", reach: 179781, impressions: 395925, results: 331, ctr: 0.14, cpc: 10.45, cpm: 3.65, amountSpent: 3459.45, costPerResult: 10.45, linkClicks: 554 }
         ]
       }
     ]
@@ -93,8 +130,16 @@ export const accounts: Account[] = [
         linked: true,
         client: "Alice Johnson",
         description: "Sale on all spring gardening essentials.",
+        age: "30-55",
+        gender: "All",
+        pageName: "Alice's Garden",
+        attributionSetting: "1-day click",
+        resultType: "Post engagement",
+        currency: "USD",
+        startDate: "2024-03-01",
+        endDate: "2024-04-30",
         dailyPerformance: [
-            { date: "2024-07-28", reach: 85000, impressions: 320000, conversions: 1500, ctr: 3.1, cpc: 0.90, cpm: 4.10 }
+            { date: "2024-07-28", reach: 85000, impressions: 320000, results: 1500, ctr: 3.1, cpc: 0.90, cpm: 4.10, frequency: 3.76, amountSpent: 1312.00, costPerResult: 0.87, linkClicks: 9920 }
         ]
       },
     ]
@@ -114,8 +159,15 @@ export const accounts: Account[] = [
         linked: true,
         client: "Bob Williams",
         description: "Launching the new X-series gadget.",
+        age: "18-35",
+        gender: "All",
+        pageName: "Bob's Tech",
+        attributionSetting: "7-day click",
+        resultType: "Link clicks",
+        currency: "USD",
+        startDate: "2024-07-10",
         dailyPerformance: [
-            { date: "2024-07-28", reach: 56780, impressions: 210890, conversions: 890, ctr: 1.8, cpc: 1.20, cpm: 5.20 }
+            { date: "2024-07-28", reach: 56780, impressions: 210890, results: 890, ctr: 1.8, cpc: 1.20, cpm: 5.20, frequency: 3.71, amountSpent: 1096.63, costPerResult: 1.23, linkClicks: 3796 }
         ]
       },
     ]
@@ -135,8 +187,16 @@ export const accounts: Account[] = [
         linked: false,
         client: "Charlie Brown",
         description: "General brand awareness campaign.",
+        age: "18-65+",
+        gender: "All",
+        pageName: "Charlie's Cyber",
+        attributionSetting: "1-day view",
+        resultType: "Reach",
+        currency: "USD",
+        startDate: "2024-07-01",
+        endDate: "2024-09-30",
         dailyPerformance: [
-            { date: "2024-07-28", reach: 350000, impressions: 1200000, conversions: 120, ctr: 0.8, cpc: 0.25, cpm: 1.50 }
+            { date: "2024-07-28", reach: 350000, impressions: 1200000, results: 120, ctr: 0.8, cpc: 0.25, cpm: 1.50, frequency: 3.43, amountSpent: 1800, costPerResult: 15, linkClicks: 9600 }
         ]
       },
     ]
@@ -156,8 +216,16 @@ export const accounts: Account[] = [
         linked: true,
         client: "Diana Prince",
         description: "A giveaway contest to boost engagement.",
+        age: "18-40",
+        gender: "Female",
+        pageName: "Dazzle with Diana",
+        attributionSetting: "1-day click or 1-day view",
+        resultType: "Post engagement",
+        currency: "USD",
+        startDate: "2023-11-15",
+        endDate: "2023-12-25",
         dailyPerformance: [
-            { date: "2024-07-28", reach: 95000, impressions: 450000, conversions: 5600, ctr: 4.2, cpc: 0.50, cpm: 2.80 }
+            { date: "2024-07-28", reach: 95000, impressions: 450000, results: 5600, ctr: 4.2, cpc: 0.50, cpm: 2.80, frequency: 4.74, amountSpent: 1260, costPerResult: 0.23, linkClicks: 18900 }
         ]
       },
     ]

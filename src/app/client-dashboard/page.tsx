@@ -26,21 +26,21 @@ async function getClientUser(
   return undefined;
 }
 
-function getLatestPerformance(campaigns: Campaign[]): { totalReach: number, totalImpressions: number, totalConversions: number } {
+function getLatestPerformance(campaigns: Campaign[]): { totalReach: number, totalImpressions: number, totalResults: number } {
     let totalReach = 0;
     let totalImpressions = 0;
-    let totalConversions = 0;
+    let totalResults = 0;
 
     campaigns.forEach(campaign => {
         if (campaign.dailyPerformance && campaign.dailyPerformance.length > 0) {
             const latest = campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
             totalReach += latest.reach;
             totalImpressions += latest.impressions;
-            totalConversions += latest.conversions;
+            totalResults += latest.results;
         }
     });
 
-    return { totalReach, totalImpressions, totalConversions };
+    return { totalReach, totalImpressions, totalResults };
 }
 
 export default async function ClientDashboardPage({
@@ -86,7 +86,7 @@ export default async function ClientDashboardPage({
     }
 
     const clientCampaigns = await getClientCampaigns(adAccountId);
-    const { totalReach, totalImpressions, totalConversions } = getLatestPerformance(clientCampaigns);
+    const { totalReach, totalImpressions, totalResults } = getLatestPerformance(clientCampaigns);
 
   return (
     <div className="container mx-auto py-2">
@@ -114,8 +114,8 @@ export default async function ClientDashboardPage({
           Icon={Eye}
         />
         <KpiCard
-          title="Conversions"
-          value={new Intl.NumberFormat().format(totalConversions)}
+          title="Results"
+          value={new Intl.NumberFormat().format(totalResults)}
           description="Latest daily total"
           Icon={Activity}
         />

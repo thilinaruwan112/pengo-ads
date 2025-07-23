@@ -27,6 +27,13 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
   const [description, setDescription] = useState(campaign.description);
   const [status, setStatus] = useState<Campaign['status']>(campaign.status);
   const [platform, setPlatform] = useState<Campaign['platform']>(campaign.platform);
+  const [age, setAge] = useState(campaign.age || "");
+  const [gender, setGender] = useState<Campaign['gender']>(campaign.gender || "All");
+  const [pageName, setPageName] = useState(campaign.pageName || "");
+  const [attributionSetting, setAttributionSetting] = useState(campaign.attributionSetting || "");
+  const [resultType, setResultType] = useState(campaign.resultType || "");
+  const [currency, setCurrency] = useState(campaign.currency || "USD");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
@@ -37,6 +44,12 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
       description,
       status,
       platform,
+      age,
+      gender,
+      pageName,
+      attributionSetting,
+      resultType,
+      currency,
     };
 
     try {
@@ -89,16 +102,13 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="platform">Platform</Label>
-                            <Select value={platform} onValueChange={(val: Campaign['platform']) => setPlatform(val)}>
-                                <SelectTrigger id="platform">
-                                    <SelectValue placeholder="Select platform" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Facebook">Facebook</SelectItem>
-                                    <SelectItem value="Instagram">Instagram</SelectItem>
-                                </SelectContent>
-                            </Select>
+                             <Label htmlFor="page-name">Page Name</Label>
+                            <Input
+                            id="page-name"
+                            value={pageName}
+                            onChange={(e) => setPageName(e.target.value)}
+                            placeholder="e.g., Your Brand's Page"
+                            />
                         </div>
                     </div>
 
@@ -112,19 +122,66 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
                         placeholder="A compelling, short description for the ad copy."
                         />
                     </div>
-                    
-                    <div className="space-y-2">
-                        <Label htmlFor="status">Status</Label>
-                        <Select value={status} onValueChange={(val: Campaign['status']) => setStatus(val)}>
-                            <SelectTrigger id="status" className="w-[180px]">
-                                <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="paused">Paused</SelectItem>
-                                <SelectItem value="archived">Archived</SelectItem>
-                            </SelectContent>
-                        </Select>
+
+                    <div className="grid md:grid-cols-3 gap-6">
+                         <div className="space-y-2">
+                            <Label htmlFor="platform">Platform</Label>
+                            <Select value={platform} onValueChange={(val: Campaign['platform']) => setPlatform(val)}>
+                                <SelectTrigger id="platform">
+                                    <SelectValue placeholder="Select platform" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Facebook">Facebook</SelectItem>
+                                    <SelectItem value="Instagram">Instagram</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="status">Status</Label>
+                            <Select value={status} onValueChange={(val: Campaign['status']) => setStatus(val)}>
+                                <SelectTrigger id="status">
+                                    <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="paused">Paused</SelectItem>
+                                    <SelectItem value="archived">Archived</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="result-type">Result Type</Label>
+                            <Input id="result-type" value={resultType} onChange={(e) => setResultType(e.target.value)} placeholder="e.g., Link Clicks" />
+                        </div>
+                    </div>
+
+                     <div className="grid md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="age">Age</Label>
+                            <Input id="age" value={age} onChange={(e) => setAge(e.target.value)} placeholder="e.g., 18-65+" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="gender">Gender</Label>
+                            <Select value={gender} onValueChange={(val: Campaign['gender']) => setGender(val)}>
+                                <SelectTrigger id="gender">
+                                    <SelectValue placeholder="Select gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">All</SelectItem>
+                                    <SelectItem value="Male">Male</SelectItem>
+                                    <SelectItem value="Female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                             <Label htmlFor="currency">Currency</Label>
+                            <Input id="currency" value={currency} onChange={(e) => setCurrency(e.target.value)} placeholder="e.g., USD" />
+                        </div>
+                    </div>
+
+                     <div className="space-y-2">
+                        <Label htmlFor="attribution-setting">Attribution Setting</Label>
+                        <Input id="attribution-setting" value={attributionSetting} onChange={(e) => setAttributionSetting(e.target.value)} placeholder="e.g., 7-day click or 1-day view" />
                     </div>
                     
                     <div className="flex justify-end">
@@ -154,10 +211,9 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
                             <TableHead>Date</TableHead>
                             <TableHead className="text-right">Reach</TableHead>
                             <TableHead className="text-right">Impressions</TableHead>
-                            <TableHead className="text-right">Conversions</TableHead>
+                            <TableHead className="text-right">Results</TableHead>
                             <TableHead className="text-right">CTR (%)</TableHead>
-                            <TableHead className="text-right">CPC ($)</TableHead>
-                            <TableHead className="text-right">CPM ($)</TableHead>
+                            <TableHead className="text-right">Amount Spent</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -166,10 +222,9 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
                                 <TableCell>{format(new Date(record.date), "PPP")}</TableCell>
                                 <TableCell className="text-right">{record.reach.toLocaleString()}</TableCell>
                                 <TableCell className="text-right">{record.impressions.toLocaleString()}</TableCell>
-                                <TableCell className="text-right">{record.conversions.toLocaleString()}</TableCell>
+                                <TableCell className="text-right">{record.results.toLocaleString()}</TableCell>
                                 <TableCell className="text-right">{record.ctr.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">{record.cpc.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">{record.cpm.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">{campaign.currency} {record.amountSpent?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                             </TableRow>
                         )) : (
                             <TableRow>

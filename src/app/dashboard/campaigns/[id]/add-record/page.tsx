@@ -25,10 +25,15 @@ export default function AddDailyRecordPage() {
   const [date, setDate] = useState<Date>();
   const [reach, setReach] = useState("");
   const [impressions, setImpressions] = useState("");
-  const [conversions, setConversions] = useState("");
+  const [results, setResults] = useState(""); // Renamed from conversions
   const [ctr, setCtr] = useState("");
   const [cpc, setCpc] = useState("");
   const [cpm, setCpm] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [amountSpent, setAmountSpent] = useState("");
+  const [costPerResult, setCostPerResult] = useState("");
+  const [linkClicks, setLinkClicks] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSave = async () => {
@@ -46,10 +51,14 @@ export default function AddDailyRecordPage() {
       date: format(date, "yyyy-MM-dd"),
       reach: parseInt(reach) || 0,
       impressions: parseInt(impressions) || 0,
-      conversions: parseInt(conversions) || 0,
+      results: parseInt(results) || 0,
       ctr: parseFloat(ctr) || 0,
       cpc: parseFloat(cpc) || 0,
       cpm: parseFloat(cpm) || 0,
+      frequency: parseFloat(frequency) || 0,
+      amountSpent: parseFloat(amountSpent) || 0,
+      costPerResult: parseFloat(costPerResult) || 0,
+      linkClicks: parseInt(linkClicks) || 0,
     };
 
     try {
@@ -138,8 +147,23 @@ export default function AddDailyRecordPage() {
                             <Input id="impressions" type="number" value={impressions} onChange={e => setImpressions(e.target.value)} placeholder="e.g., 50000" />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="conversions">Conversions</Label>
-                            <Input id="conversions" type="number" value={conversions} onChange={e => setConversions(e.target.value)} placeholder="e.g., 250" />
+                            <Label htmlFor="results">Results</Label>
+                            <Input id="results" type="number" value={results} onChange={e => setResults(e.target.value)} placeholder="e.g., 250" />
+                        </div>
+                    </div>
+
+                     <div className="grid md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="link-clicks">Link Clicks</Label>
+                            <Input id="link-clicks" type="number" value={linkClicks} onChange={e => setLinkClicks(e.target.value)} placeholder="e.g., 1200" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="amount-spent">Amount Spent</Label>
+                            <Input id="amount-spent" type="number" value={amountSpent} onChange={e => setAmountSpent(e.target.value)} placeholder="e.g., 500.00" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="frequency">Frequency</Label>
+                            <Input id="frequency" type="number" value={frequency} onChange={e => setFrequency(e.target.value)} placeholder="e.g., 1.8" />
                         </div>
                     </div>
 
@@ -157,6 +181,12 @@ export default function AddDailyRecordPage() {
                             <Input id="cpm" type="number" value={cpm} onChange={e => setCpm(e.target.value)} placeholder="e.g., 3.50" />
                         </div>
                     </div>
+                     <div className="grid md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                           <Label htmlFor="cost-per-result">Cost Per Result</Label>
+                            <Input id="cost-per-result" type="number" value={costPerResult} onChange={e => setCostPerResult(e.target.value)} placeholder="e.g., 2.00" />
+                        </div>
+                     </div>
                     
                     <div className="flex justify-end">
                         <Button onClick={handleSave} disabled={isSaveDisabled}>

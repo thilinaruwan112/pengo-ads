@@ -44,6 +44,17 @@ export const columns: ColumnDef<Campaign>[] = [
     header: "Platform",
   },
   {
+    accessorKey: "results",
+    header: "Results",
+    cell: ({ row }) => {
+        const campaign = row.original;
+        const latest = getLatestPerformance(campaign);
+        if (!latest) return <div className="text-left">-</div>;
+        const amount = latest.results;
+        return <div className="text-left font-medium">{new Intl.NumberFormat().format(amount)}</div>
+    },
+  },
+    {
     accessorKey: "impressions",
     header: "Impressions",
     cell: ({ row }) => {
@@ -54,15 +65,15 @@ export const columns: ColumnDef<Campaign>[] = [
         return <div className="text-left font-medium">{new Intl.NumberFormat().format(amount)}</div>
     },
   },
-  {
-    accessorKey: "ctr",
-    header: "CTR",
+    {
+    accessorKey: "amountSpent",
+    header: "Amount Spent",
     cell: ({ row }) => {
         const campaign = row.original;
         const latest = getLatestPerformance(campaign);
-        if (!latest) return <div className="text-left">-</div>;
-        const amount = latest.ctr;
-        return <div className="text-left font-medium">{amount.toFixed(2)}%</div>
+        if (!latest || latest.amountSpent === undefined) return <div className="text-left">-</div>;
+        const amount = latest.amountSpent;
+        return <div className="text-left font-medium">{campaign.currency} {amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
     },
   },
   {

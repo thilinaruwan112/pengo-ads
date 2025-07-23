@@ -12,10 +12,14 @@ export type DailyPerformance = {
   date: string; // YYYY-MM-DD
   reach: number;
   impressions: number;
-  conversions: number;
+  results: number; // Renamed from conversions
   ctr: number;
   cpc: number;
   cpm: number;
+  frequency?: number;
+  amountSpent?: number;
+  costPerResult?: number;
+  linkClicks?: number;
 };
 
 export type Campaign = {
@@ -27,6 +31,15 @@ export type Campaign = {
   client?: string; // Client's name
   description: string;
   dailyPerformance: DailyPerformance[];
+  // New detailed fields
+  age?: string;
+  gender?: "All" | "Male" | "Female";
+  pageName?: string;
+  attributionSetting?: string;
+  resultType?: string;
+  currency?: string;
+  startDate?: string; // YYYY-MM-DD
+  endDate?: string; // YYYY-MM-DD
 };
 
 export type Account = {

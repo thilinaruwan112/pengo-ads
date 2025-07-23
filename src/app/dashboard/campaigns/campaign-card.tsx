@@ -64,7 +64,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CardDescription>{campaign.platform}</CardDescription>
+        <CardDescription>{campaign.platform} - {campaign.resultType}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between items-center">
@@ -78,8 +78,8 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
                 <span className="font-medium">{new Intl.NumberFormat().format(latestPerformance.impressions)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">CTR</span>
-                <span className="font-medium">{latestPerformance.ctr.toFixed(2)}%</span>
+                <span className="text-sm text-muted-foreground">Results</span>
+                <span className="font-medium">{new Intl.NumberFormat().format(latestPerformance.results)}</span>
                 </div>
             </>
         ) : (

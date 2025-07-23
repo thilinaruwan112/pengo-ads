@@ -35,22 +35,35 @@ interface CreateCampaignDialogProps {
 export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts = accounts }: CreateCampaignDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  // Campaign Details
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<string | undefined>(clientAccountId);
   const [status, setStatus] = useState<Campaign['status']>('active');
   const [platform, setPlatform] = useState<Campaign['platform']>('Facebook');
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState<Campaign['gender']>("All");
+  const [pageName, setPageName] = useState("");
+  const [attributionSetting, setAttributionSetting] = useState("");
+  const [resultType, setResultType] = useState("");
+  const [currency, setCurrency] = useState("USD");
+
+  // Initial Performance Record
   const [date, setDate] = useState<Date>();
   const [reach, setReach] = useState("");
   const [impressions, setImpressions] = useState("");
-  const [conversions, setConversions] = useState("");
+  const [results, setResults] = useState("");
   const [ctr, setCtr] = useState("");
   const [cpc, setCpc] = useState("");
   const [cpm, setCpm] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [frequency, setFrequency] = useState("");
+  const [amountSpent, setAmountSpent] = useState("");
+  const [costPerResult, setCostPerResult] = useState("");
+  const [linkClicks, setLinkClicks] = useState("");
 
-  const { toast } = useToast();
-  
   const handleAccountChange = (accountId: string) => {
     setSelectedAccount(accountId);
   }
@@ -61,13 +74,23 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
     setSelectedAccount(isClient ? clientAccountId : "");
     setStatus("active");
     setPlatform("Facebook");
+    setAge("");
+    setGender("All");
+    setPageName("");
+    setAttributionSetting("");
+    setResultType("");
+    setCurrency("USD");
     setDate(undefined);
     setReach("");
     setImpressions("");
-    setConversions("");
+    setResults("");
     setCtr("");
     setCpc("");
     setCpm("");
+    setFrequency("");
+    setAmountSpent("");
+    setCostPerResult("");
+    setLinkClicks("");
   }
 
   const handleSave = async () => {
@@ -86,10 +109,14 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
         date: format(date, "yyyy-MM-dd"),
         reach: parseInt(reach) || 0,
         impressions: parseInt(impressions) || 0,
-        conversions: parseInt(conversions) || 0,
+        results: parseInt(results) || 0,
         ctr: parseFloat(ctr) || 0,
         cpc: parseFloat(cpc) || 0,
         cpm: parseFloat(cpm) || 0,
+        frequency: parseFloat(frequency) || 0,
+        amountSpent: parseFloat(amountSpent) || 0,
+        costPerResult: parseFloat(costPerResult) || 0,
+        linkClicks: parseInt(linkClicks) || 0,
     }
 
     const newCampaignData = {
@@ -98,6 +125,12 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
       description,
       status,
       platform,
+      age,
+      gender,
+      pageName,
+      attributionSetting,
+      resultType,
+      currency,
       dailyPerformance: [initialPerformance]
     };
 
@@ -136,7 +169,7 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
       <DialogTrigger asChild>
         <Button>Add Campaign</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Campaign</DialogTitle>
           <DialogDescription>
@@ -144,10 +177,16 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
+            {/* Campaign Details Section */}
+            <h4 className="text-md font-medium">Campaign Details</h4>
             <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label htmlFor="campaign-name">Name</Label>
                     <Input id="campaign-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Summer Sale 2024" />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="page-name">Page Name</Label>
+                    <Input id="page-name" value={pageName} onChange={(e) => setPageName(e.target.value)} placeholder="e.g., Your Brand's Page" />
                 </div>
                 {!isClient && (
                     <div className="space-y-2">
@@ -167,13 +206,11 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
                     </div>
                 )}
             </div>
-
             <div className="space-y-2">
                 <Label htmlFor="campaign-description">Description</Label>
                 <Textarea id="campaign-description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="A compelling, short description for the ad copy." />
             </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
                  <div className="space-y-2">
                     <Label htmlFor="platform">Platform</Label>
                     <Select value={platform} onValueChange={(val: Campaign['platform']) => setPlatform(val)}>
@@ -199,36 +236,68 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
                         </SelectContent>
                     </Select>
                 </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="result-type">Result Type</Label>
+                    <Input id="result-type" value={resultType} onChange={(e) => setResultType(e.target.value)} placeholder="e.g., Link Clicks" />
+                </div>
             </div>
-            
+             <div className="grid md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                    <Label htmlFor="age">Age</Label>
+                    <Input id="age" value={age} onChange={(e) => setAge(e.target.value)} placeholder="e.g., 18-65+" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select value={gender} onValueChange={(val: Campaign['gender']) => setGender(val)}>
+                        <SelectTrigger id="gender">
+                            <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="currency">Currency</Label>
+                    <Input id="currency" value={currency} onChange={(e) => setCurrency(e.target.value)} placeholder="e.g., USD" />
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="attribution-setting">Attribution Setting</Label>
+                <Input id="attribution-setting" value={attributionSetting} onChange={(e) => setAttributionSetting(e.target.value)} placeholder="e.g., 7-day click or 1-day view" />
+            </div>
+
+            {/* Initial Performance Record Section */}
             <div className="border-t pt-6">
                  <h4 className="text-md font-medium mb-4">Initial Performance Record</h4>
+                 <div className="space-y-2 mb-6">
+                     <Label htmlFor="date">Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[280px] justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                 </div>
                  <div className="grid md:grid-cols-3 gap-6">
-                     <div className="space-y-2 md:col-span-3">
-                         <Label htmlFor="date">Date</Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "w-full justify-start text-left font-normal",
-                                  !date && "text-muted-foreground"
-                                )}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={setDate}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="reach">Reach</Label>
                         <Input id="reach" type="number" value={reach} onChange={e => setReach(e.target.value)} placeholder="e.g., 15000" />
@@ -238,24 +307,39 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
                         <Input id="impressions" type="number" value={impressions} onChange={e => setImpressions(e.target.value)} placeholder="e.g., 50000" />
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="conversions">Conversions</Label>
-                        <Input id="conversions" type="number" value={conversions} onChange={e => setConversions(e.target.value)} placeholder="e.g., 250" />
+                        <Label htmlFor="results">Results</Label>
+                        <Input id="results" type="number" value={results} onChange={e => setResults(e.target.value)} placeholder="e.g., 250" />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="link-clicks">Link Clicks</Label>
+                        <Input id="link-clicks" type="number" value={linkClicks} onChange={e => setLinkClicks(e.target.value)} placeholder="e.g., 1200" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="amount-spent">Amount Spent</Label>
+                        <Input id="amount-spent" type="number" value={amountSpent} onChange={e => setAmountSpent(e.target.value)} placeholder="e.g., 500.00" />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="frequency">Frequency</Label>
+                        <Input id="frequency" type="number" value={frequency} onChange={e => setFrequency(e.target.value)} placeholder="e.g., 1.8" />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="ctr">CTR (%)</Label>
                         <Input id="ctr" type="number" value={ctr} onChange={e => setCtr(e.target.value)} placeholder="e.g., 2.5" />
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="cpc">CPC ($)</Label>
+                        <Label htmlFor="cpc">CPC</Label>
                         <Input id="cpc" type="number" value={cpc} onChange={e => setCpc(e.target.value)} placeholder="e.g., 0.75" />
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="cpm">CPM ($)</Label>
+                        <Label htmlFor="cpm">CPM</Label>
                         <Input id="cpm" type="number" value={cpm} onChange={e => setCpm(e.target.value)} placeholder="e.g., 3.50" />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="cost-per-result">Cost Per Result</Label>
+                        <Input id="cost-per-result" type="number" value={costPerResult} onChange={e => setCostPerResult(e.target.value)} placeholder="e.g., 2.00" />
                     </div>
                 </div>
             </div>
-
         </div>
         <DialogFooter>
           <Button onClick={handleSave} disabled={isSaveDisabled}>
