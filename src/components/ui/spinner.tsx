@@ -2,6 +2,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Progress } from "./progress";
+import { useEffect, useState } from "react";
 
 const PenguinIcon = ({ className }: { className?: string }) => (
     <svg
@@ -30,9 +32,20 @@ export const Spinner = ({ className }: { className?: string }) => {
 };
 
 export const FullPageSpinner = () => {
+    const [progress, setProgress] = useState(13)
+ 
+    useEffect(() => {
+        const timer = setTimeout(() => setProgress(66), 500)
+        return () => clearTimeout(timer)
+    }, [])
+
+
     return (
         <div className="flex h-full min-h-[calc(100vh-200px)] w-full items-center justify-center">
-            <Spinner />
+            <div className="flex flex-col items-center gap-4">
+                <Spinner />
+                <Progress value={progress} className="w-40" />
+            </div>
         </div>
     )
 }
