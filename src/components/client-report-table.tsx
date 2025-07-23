@@ -32,27 +32,27 @@ export function ClientReportTable({ data }: ClientReportTableProps) {
             <CardTitle>Client Report</CardTitle>
             <CardDescription>Performance breakdown by client.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
             <Table>
                 <TableHeader>
                     <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead className="text-right">Campaigns</TableHead>
-                    <TableHead className="text-right">Reach</TableHead>
-                    <TableHead className="text-right">Results</TableHead>
-                    <TableHead className="text-right">Spent</TableHead>
-                    <TableHead className="text-right">CPR</TableHead>
+                    <TableHead className="whitespace-nowrap">Client</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Campaigns</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Reach</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Results</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Spent</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">CPR</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {data.length > 0 ? data.map((row) => (
                     <TableRow key={row.client}>
-                        <TableCell className="font-medium">{row.client}</TableCell>
-                        <TableCell className="text-right">{row.campaigns}</TableCell>
-                        <TableCell className="text-right">{row.reach.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">{row.results.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">${row.spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                        <TableCell className="text-right">${row.cpr.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">{row.client}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">{row.campaigns}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">{row.reach.toLocaleString()}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">{row.results.toLocaleString()}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">${row.spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">${row.cpr.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     </TableRow>
                     )) : (
                         <TableRow>

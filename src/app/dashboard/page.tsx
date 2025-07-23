@@ -226,10 +226,10 @@ export default async function Dashboard({
 
   return (
     <>
-      <div className="flex justify-between items-start mb-4 gap-4 flex-wrap">
+      <div className="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
         <div>
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {filterDescription}
           </p>
         </div>

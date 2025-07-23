@@ -103,9 +103,9 @@ export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersPro
     const areFiltersActive = accountId !== 'all-clients' || campaignId !== 'all-campaigns' || date?.from;
 
     return (
-        <div className="flex gap-2 flex-wrap justify-end">
+        <div className="flex gap-2 flex-col sm:flex-row sm:flex-wrap sm:justify-end">
             <Select value={accountId} onValueChange={handleAccountChange}>
-                <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectTrigger className="w-full sm:w-auto min-w-[200px]">
                     <SelectValue placeholder="Filter by client..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -118,7 +118,7 @@ export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersPro
                 </SelectContent>
             </Select>
             <Select value={campaignId} onValueChange={handleCampaignChange}>
-                <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectTrigger className="w-full sm:w-auto min-w-[200px]">
                     <SelectValue placeholder="Filter by campaign..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,7 +136,7 @@ export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersPro
                         id="date"
                         variant={"outline"}
                         className={cn(
-                        "w-full sm:w-[260px] justify-start text-left font-normal",
+                        "w-full sm:w-auto min-w-[260px] justify-start text-left font-normal",
                         !date && "text-muted-foreground"
                         )}
                     >
