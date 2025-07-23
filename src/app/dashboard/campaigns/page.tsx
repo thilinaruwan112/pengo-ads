@@ -3,7 +3,7 @@ import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import type { Campaign } from "@/types"
 import { CampaignCard } from "./campaign-card"
-import { CreateCampaignDialog } from "./create-campaign-dialog"
+import { CreateCampaignDialog } from "@/components/create-campaign-dialog"
 
 async function getCampaigns(): Promise<Campaign[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
