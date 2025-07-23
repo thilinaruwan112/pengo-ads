@@ -1,6 +1,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { posts, accounts } from '@/lib/data';
+import type { Post } from '@/types';
 
 // GET posts, optionally filtered by adAccountId
 export async function GET(request: NextRequest) {
@@ -36,4 +37,25 @@ export async function GET(request: NextRequest) {
 
 
   return NextResponse.json(accountPosts);
+}
+
+// CREATE a new post
+export async function POST(request: NextRequest) {
+    const newPostData: Omit<Post, 'id'> = await request.json();
+
+    if (!newPostData.accountId || !newPostData.campaignId || !newPostData.content) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const newPost: Post = {
+        id: `POST${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        ...newPostData,
+    };
+
+    // In a real app, you would save this to a database.
+    posts.unshift(newPost); // Add to the beginning of the array
+    
+    console.log('Created new post:', newPost);
+
+    return NextResponse.json(newPost, { status: 201 });
 }
