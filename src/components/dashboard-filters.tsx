@@ -15,7 +15,7 @@ import type { DateRange } from 'react-day-picker';
 
 interface DashboardFiltersProps {
     accounts: Account[];
-    allCampaigns: (Campaign & { companyName?: string })[];
+    allCampaigns: (Campaign & { companyName?: string, clientName?: string })[];
 }
 
 export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersProps) {
@@ -37,7 +37,11 @@ export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersPro
     useEffect(() => {
         if (accountId && accountId !== 'all-clients') {
             const selectedAccount = accounts.find(a => a.id === accountId);
-            setFilteredCampaigns(allCampaigns.filter(c => c.client === selectedAccount?.clientName));
+            if (selectedAccount) {
+                 setFilteredCampaigns(allCampaigns.filter(c => 
+                    selectedAccount.campaigns.some(ac => ac.id === c.id)
+                ));
+            }
         } else {
             setFilteredCampaigns(allCampaigns);
         }
@@ -74,13 +78,20 @@ export function DashboardFilters({ accounts, allCampaigns }: DashboardFiltersPro
     }
     
     useEffect(() => {
-        if (date?.from && date?.to) {
-            updateUrlParams({ 
-                'from': format(date.from, 'yyyy-MM-dd'),
-                'to': format(date.to, 'yyyy-MM-dd')
-            });
+        const params = new URLSearchParams(searchParams.toString());
+        if (date?.from) {
+           params.set('from', format(date.from, 'yyyy-MM-dd'));
+        } else {
+            params.delete('from');
         }
-    }, [date]);
+        if (date?.to) {
+            params.set('to', format(date.to, 'yyyy-MM-dd'));
+        } else {
+            params.delete('to');
+        }
+        router.push(`${pathname}?${params.toString()}`);
+
+    }, [date, router, pathname, searchParams]);
 
     const handleResetFilters = () => {
         setAccountId('all-clients');
