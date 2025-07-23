@@ -4,6 +4,7 @@ import { DataTable } from "./data-table"
 import type { Campaign } from "@/types"
 import { CampaignCard } from "./campaign-card"
 import { CreateCampaignDialog } from "@/components/create-campaign-dialog"
+import { ExcelImporter } from "@/components/excel-importer"
 
 async function getCampaigns(): Promise<Campaign[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
@@ -26,7 +27,10 @@ export default async function CampaignsPage() {
             Manage all ad campaigns fetched from Meta.
           </p>
         </div>
-        <CreateCampaignDialog />
+        <div className="flex items-center gap-2">
+            <ExcelImporter />
+            <CreateCampaignDialog />
+        </div>
       </div>
       <div className="hidden md:block">
         <DataTable columns={columns} data={campaigns} />
