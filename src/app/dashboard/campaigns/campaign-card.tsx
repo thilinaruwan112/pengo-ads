@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 interface CampaignCardProps {
   campaign: Campaign
@@ -37,6 +38,9 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+               <DropdownMenuItem asChild>
+                <Link href={`/dashboard/campaigns/${campaign.id}/edit`}>Edit</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(campaign.id)}
               >
