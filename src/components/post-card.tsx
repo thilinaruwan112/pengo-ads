@@ -4,7 +4,7 @@
 import type { Post, Account, Campaign } from "@/types"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import Image from "next/image"
 import { format, parseISO } from "date-fns"
 import { cn } from "@/lib/utils"
