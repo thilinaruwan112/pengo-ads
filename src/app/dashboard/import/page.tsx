@@ -32,6 +32,7 @@ const formatDate = (date: Date) => {
 export default function ImportPage() {
   const router = useRouter();
   const [data, setData] = useState<any[]>([])
+  const [headers, setHeaders] = useState<string[]>([]);
   const [fileName, setFileName] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const { toast } = useToast()
@@ -50,22 +51,26 @@ export default function ImportPage() {
         const workbook = XLSX.read(binaryStr, { type: "binary", cellDates: true })
         const sheetName = workbook.SheetNames[0]
         const worksheet = workbook.Sheets[sheetName]
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false })
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { raw: false, defval: "" })
         
         const formattedData = jsonData.map((row: any) => {
-            if (row['Reporting starts']) {
-                row['Reporting starts'] = formatDate(new Date(row['Reporting starts']));
+            const newRow = {...row};
+            if (newRow['Reporting starts']) {
+                newRow['Reporting starts'] = formatDate(new Date(newRow['Reporting starts']));
             }
-            if (row['Reporting ends']) {
-                 row['Reporting ends'] = formatDate(new Date(row['Reporting ends']));
+            if (newRow['Reporting ends']) {
+                 newRow['Reporting ends'] = formatDate(new Date(newRow['Reporting ends']));
             }
-            return row;
+            return newRow;
         })
 
+        if (formattedData.length > 0) {
+            setHeaders(Object.keys(formattedData[0]));
+        }
         setData(formattedData)
         toast({
           title: "File Processed",
-          description: "Data has been extracted. Please review below.",
+          description: "Data has been extracted. Please review and edit below if needed.",
         })
       } catch (error) {
         console.error("Error processing Excel file:", error)
@@ -89,6 +94,12 @@ export default function ImportPage() {
         });
     };
     reader.readAsBinaryString(file)
+  }
+
+  const handleCellChange = (rowIndex: number, header: string, value: string) => {
+    const updatedData = [...data];
+    updatedData[rowIndex][header] = value;
+    setData(updatedData);
   }
 
   const handleImport = async () => {
@@ -192,8 +203,6 @@ export default function ImportPage() {
     }
   }
 
-  const headers = data.length > 0 ? Object.keys(data[0]) : []
-
   return (
     <div className="container mx-auto py-2">
        <div className="flex items-center mb-4 gap-4">
@@ -234,9 +243,9 @@ export default function ImportPage() {
         {data.length > 0 && (
         <Card className="mt-6">
             <CardHeader>
-                <CardTitle>2. Review Data</CardTitle>
+                <CardTitle>2. Review and Edit Data</CardTitle>
                 <CardDescription>
-                 Found {data.length} rows in "{fileName}". Review the data before importing.
+                 Found {data.length} rows in "{fileName}". You can edit the data below before importing.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -253,8 +262,13 @@ export default function ImportPage() {
                     {data.map((row, rowIndex) => (
                       <TableRow key={rowIndex}>
                         {headers.map((header) => (
-                          <TableCell key={header} className="whitespace-nowrap">
-                            {String(row[header] ?? '')}
+                          <TableCell key={header} className="whitespace-nowrap p-1">
+                            <Input
+                                type="text"
+                                value={row[header] ?? ''}
+                                onChange={(e) => handleCellChange(rowIndex, header, e.target.value)}
+                                className="w-full h-8 border-transparent hover:border-input focus:border-input focus:ring-1 focus:ring-ring"
+                            />
                           </TableCell>
                         ))}
                       </TableRow>
