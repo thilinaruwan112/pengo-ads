@@ -190,5 +190,13 @@ export const accounts: Account[] = [
   }
 ];
 
-// This export can be deprecated or used for the admin view to show all campaigns at once.
-export const campaigns: Campaign[] = accounts.flatMap(acc => acc.campaigns);
+// Combine all campaigns from all accounts into a single array.
+// This is useful for the main admin dashboard view.
+export let campaigns: Campaign[] = accounts.flatMap(acc =>
+  acc.campaigns.map(c => ({
+    ...c,
+    // Add account-level info to each campaign if needed elsewhere
+    client: acc.clientName,
+    companyName: acc.companyName,
+  }))
+);

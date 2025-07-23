@@ -19,8 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import { accounts } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Campaign } from "@/types";
+import { useRouter } from "next/navigation";
 
 export function CreateCampaignDialog() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,15 +35,16 @@ export function CreateCampaignDialog() {
   const [ctr, setCtr] = useState("");
   const [cpc, setCpc] = useState("");
   const [cpm, setCpm] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { toast } = useToast();
 
-  const handleSave = () => {
-    // In a real app, you would have a POST API endpoint to save the new campaign
-    console.log("Saving campaign:", {
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    const newCampaignData = {
+      accountId: selectedAccount,
       name,
       description,
-      accountId: selectedAccount,
       status,
       platform,
       reach: parseInt(reach) || 0,
@@ -50,27 +53,49 @@ export function CreateCampaignDialog() {
       ctr: parseFloat(ctr) || 0,
       cpc: parseFloat(cpc) || 0,
       cpm: parseFloat(cpm) || 0,
-    });
-    toast({
-      title: "Campaign Created",
-      description: "Your new campaign has been saved.",
-    });
-    // Reset state
-    setOpen(false);
-    setName("");
-    setDescription("");
-    setSelectedAccount("");
-    setStatus("active");
-    setPlatform("Facebook");
-    setReach("");
-    setImpressions("");
-    setConversions("");
-    setCtr("");
-    setCpc("");
-    setCpm("");
+    };
+
+    try {
+        const response = await fetch('/api/campaigns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCampaignData),
+        });
+
+        if (!response.ok) throw new Error('Failed to create campaign');
+        
+        toast({
+            title: "Campaign Created",
+            description: "Your new campaign has been successfully saved.",
+        });
+        
+        // Reset state and close dialog
+        setOpen(false);
+        setName("");
+        setDescription("");
+        setSelectedAccount("");
+        setStatus("active");
+        setPlatform("Facebook");
+        setReach("");
+        setImpressions("");
+        setConversions("");
+        setCtr("");
+        setCpc("");
+        setCpm("");
+
+        router.refresh(); // Refresh the page to show the new campaign
+    } catch (error) {
+        toast({
+            title: "Error",
+            description: "Could not save the new campaign.",
+            variant: "destructive"
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
-  const isSaveDisabled = !name || !description || !selectedAccount;
+  const isSaveDisabled = !name || !description || !selectedAccount || isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -121,7 +146,7 @@ export function CreateCampaignDialog() {
                     <SelectContent>
                         {accounts.map(acc => (
                             <SelectItem key={acc.id} value={acc.id}>
-                                {acc.clientName}
+                                {acc.companyName} ({acc.clientName})
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -183,7 +208,7 @@ export function CreateCampaignDialog() {
         </div>
         <DialogFooter>
           <Button onClick={handleSave} disabled={isSaveDisabled}>
-            Save Campaign
+            {isSubmitting ? 'Saving...' : 'Save Campaign'}
           </Button>
         </DialogFooter>
       </DialogContent>
