@@ -1,6 +1,6 @@
 import { PostCard } from "@/components/post-card"
 import { users, accounts } from "@/lib/data"
-import type { Post, User } from "@/types"
+import type { Post, User, Account, Campaign } from "@/types"
 import { redirect } from "next/navigation"
 
 async function getClientUser(
@@ -24,6 +24,12 @@ async function getClientPosts(adAccountId: string): Promise<Post[]> {
   }
   return res.json()
 }
+
+async function getAccounts(): Promise<Account[]> {
+    // In a real app, this would be an API call
+    return accounts;
+}
+
 
 export default async function ClientPostsPage({
     searchParams,
@@ -55,6 +61,11 @@ export default async function ClientPostsPage({
     }
 
     const posts = await getClientPosts(adAccountId);
+    const allAccounts = await getAccounts();
+    const campaigns: (Campaign & { companyName: string })[] = allAccounts.flatMap(acc => 
+        acc.campaigns.map(c => ({...c, companyName: acc.companyName, clientName: acc.clientName}))
+    );
+
 
     return (
         <div className="container mx-auto py-2">
@@ -68,7 +79,7 @@ export default async function ClientPostsPage({
             </div>
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {posts.length > 0 ? posts.map((post: Post) => (
-                    <PostCard key={post.id} post={post} isClientView={true} />
+                    <PostCard key={post.id} post={post} isClientView={true} accounts={allAccounts} campaigns={campaigns} />
                 )) : (
                     <p className="text-muted-foreground col-span-full">No posts found for this company.</p>
                 )}
