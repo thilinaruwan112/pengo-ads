@@ -20,6 +20,7 @@ import type { Account, Campaign, Post } from "@/types"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { cn } from "@/lib/utils"
+import { Check, ThumbsDown, Clock, ThumbsUp } from "lucide-react"
 
 interface CreatePostDialogProps {
     accounts: Account[];
@@ -28,6 +29,14 @@ interface CreatePostDialogProps {
     isOpen?: boolean;
     setIsOpen?: (open: boolean) => void;
 }
+
+const statusConfig = {
+  'needs-approval': { label: 'Needs Approval', icon: Clock },
+  'approved': { label: 'Approved', icon: ThumbsUp },
+  'rejected': { label: 'Rejected', icon: ThumbsDown },
+  'scheduled': { label: 'Scheduled', icon: Clock },
+  'posted': { label: 'Posted', icon: Check },
+};
 
 export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setIsOpen }: CreatePostDialogProps) {
   const router = useRouter();
