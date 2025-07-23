@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, BarChart, Settings, Newspaper } from "lucide-react";
+import { Home, Users, BarChart, Settings, Newspaper, Upload } from "lucide-react";
 
 interface BottomNavProps {
   client?: boolean;
@@ -16,8 +16,8 @@ export function BottomNav({ client = false }: BottomNavProps) {
   const adminRoutes = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/dashboard/campaigns", label: "Campaigns", icon: BarChart },
-    { href: "/dashboard/clients", label: "Clients", icon: Users },
     { href: "/dashboard/posts", label: "Posts", icon: Newspaper },
+    { href: "/dashboard/import", label: "Import", icon: Upload },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
