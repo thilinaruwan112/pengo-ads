@@ -16,47 +16,42 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const [accountId, setAccountId] = useState(searchParams.get('accountId') || '');
-    const [campaignId, setCampaignId] = useState(searchParams.get('campaignId') || '');
+    const [accountId, setAccountId] = useState(searchParams.get('accountId') || 'all-clients');
+    const [campaignId, setCampaignId] = useState(searchParams.get('campaignId') || 'all-campaigns');
     const [filteredCampaigns, setFilteredCampaigns] = useState<(Campaign & { companyName: string })[]>([]);
 
     useEffect(() => {
-        if (accountId) {
+        if (accountId && accountId !== 'all-clients') {
             setFilteredCampaigns(allCampaigns.filter(c => c.client === accounts.find(a => a.id === accountId)?.clientName));
         } else {
             setFilteredCampaigns(allCampaigns);
         }
     }, [accountId, allCampaigns, accounts]);
-
-    const handleFilterChange = () => {
-        const params = new URLSearchParams();
-        if (accountId) {
-            params.set('accountId', accountId);
-        }
-        if (campaignId) {
-            params.set('campaignId', campaignId);
-        }
-        router.push(`/dashboard/posts?${params.toString()}`);
-    };
-
+    
     const handleAccountChange = (value: string) => {
-        setAccountId(value);
-        setCampaignId(''); // Reset campaign when account changes
-         const params = new URLSearchParams();
-        if (value) {
-            params.set('accountId', value);
+        const newAccountId = value;
+        setAccountId(newAccountId);
+        setCampaignId('all-campaigns'); // Reset campaign when account changes
+        
+        const params = new URLSearchParams(searchParams);
+        if (newAccountId !== 'all-clients') {
+            params.set('accountId', newAccountId);
+        } else {
+            params.delete('accountId');
         }
+        params.delete('campaignId'); // Reset campaign filter
         router.push(`/dashboard/posts?${params.toString()}`);
     }
 
     const handleCampaignChange = (value: string) => {
-        setCampaignId(value);
-        const params = new URLSearchParams();
-        if (accountId) {
-            params.set('accountId', accountId);
-        }
-        if (value) {
-            params.set('campaignId', value);
+        const newCampaignId = value;
+        setCampaignId(newCampaignId);
+
+        const params = new URLSearchParams(searchParams);
+        if (newCampaignId !== 'all-campaigns') {
+            params.set('campaignId', newCampaignId);
+        } else {
+            params.delete('campaignId');
         }
         router.push(`/dashboard/posts?${params.toString()}`);
     }
@@ -68,7 +63,7 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
                     <SelectValue placeholder="Filter by client..." />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="">All Clients</SelectItem>
+                    <SelectItem value="all-clients">All Clients</SelectItem>
                     {accounts.map(account => (
                         <SelectItem key={account.id} value={account.id}>
                             {account.companyName} ({account.clientName})
@@ -81,7 +76,7 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
                     <SelectValue placeholder="Filter by campaign..." />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="">All Campaigns</SelectItem>
+                    <SelectItem value="all-campaigns">All Campaigns</SelectItem>
                     {filteredCampaigns.map(campaign => (
                         <SelectItem key={campaign.id} value={campaign.id}>
                             {campaign.name}
