@@ -8,11 +8,9 @@ import { redirect } from "next/navigation"
 import { CreateCampaignDialog } from "@/app/dashboard/campaigns/create-campaign-dialog"
 
 async function getClientCampaigns(adAccountId: string): Promise<Campaign[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns?adAccountId=${adAccountId}`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error('Failed to fetch campaigns');
-  }
-  return res.json();
+  // In a real app, you would fetch this from your API
+  const account = accounts.find(acc => acc.id === adAccountId);
+  return account?.campaigns || [];
 }
 
 async function getClientUser(

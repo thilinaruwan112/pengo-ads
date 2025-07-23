@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { accounts } from '@/lib/data';
 import type { Campaign } from '@/types';
 
+// GET campaigns, optionally filtered by adAccountId
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const adAccountId = searchParams.get('adAccountId');
@@ -10,7 +11,13 @@ export async function GET(request: NextRequest) {
   if (!adAccountId) {
     // For the admin dashboard, if no specific account is requested,
     // we can return all campaigns from all accounts.
-    const allCampaigns = accounts.flatMap(acc => acc.campaigns);
+    const allCampaigns = accounts.flatMap(acc => 
+      acc.campaigns.map(c => ({ 
+        ...c, 
+        client: acc.clientName, 
+        companyName: acc.companyName 
+      }))
+    );
     return NextResponse.json(allCampaigns);
   }
 
@@ -19,7 +26,17 @@ export async function GET(request: NextRequest) {
   if (!account) {
     return NextResponse.json({ error: 'Account not found' }, { status: 404 });
   }
-  return NextResponse.json(account.campaigns);
+
+  // In a real app, you might fetch from Meta API here using account.accessToken
+  // For now, we return the mock data.
+  // We add client/company info for consistency, though it's already known.
+  const campaignsWithClientInfo = account.campaigns.map(c => ({
+      ...c,
+      client: account.clientName,
+      companyName: account.companyName,
+  }));
+
+  return NextResponse.json(campaignsWithClientInfo);
 }
 
 
