@@ -239,33 +239,35 @@ export default async function Dashboard({
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard
           title="Total Reach"
-          value={totalReach.toLocaleString()}
+          value={totalReach}
           description="Total users reached"
           Icon={Users}
         />
         <KpiCard
           title="Results"
-          value={totalResults.toLocaleString()}
+          value={totalResults}
           description="Total conversions/results"
           Icon={Activity}
         />
         <KpiCard
           title="Impressions"
-          value={totalImpressions.toLocaleString()}
+          value={totalImpressions}
           description="Total ad impressions"
           Icon={Eye}
         />
         <KpiCard
           title="Total Spent"
-          value={`$${totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={totalSpent}
           description="Total amount spent"
           Icon={DollarSign}
+          prefix="$"
         />
          <KpiCard
           title="Cost Per Result"
-          value={`$${costPerResult.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={costPerResult}
           description="Average cost per result"
           Icon={DollarSign}
+          prefix="$"
         />
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-5 mt-6">
