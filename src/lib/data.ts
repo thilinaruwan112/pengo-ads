@@ -1,4 +1,4 @@
-import { User, Campaign, Account } from "@/types";
+import { User, Campaign, Account, Post } from "@/types";
 
 export const users: User[] = [
   { id: "USR001", name: "Alice Johnson", email: "alice@example.com", role: "client", avatar: "/avatars/01.png", status: "active", adAccountIds: ["act_1111", "act_5555"] },
@@ -242,3 +242,58 @@ export let campaigns: Campaign[] = accounts.flatMap(acc =>
     companyName: acc.companyName,
   }))
 );
+
+// Mock data for posts
+export const posts: Post[] = [
+  {
+    id: "POST001",
+    campaignId: "CAM001",
+    accountId: "act_1111",
+    content: "Our Summer Sale is ON! Get up to 50% off on all summer collections. Don't miss out! ☀️ #SummerSale #AwesomeWidgets",
+    mediaUrl: "https://placehold.co/1080x1080.png",
+    mediaType: 'image',
+    status: 'needs-approval',
+    scheduledDate: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
+  },
+  {
+    id: "POST002",
+    campaignId: "CAM001",
+    accountId: "act_1111",
+    content: "Dive into summer with our new arrivals! Perfect for your sunny adventures. Tap to shop! #NewArrivals #SummerVibes",
+    mediaUrl: "https://placehold.co/1080x1080.png",
+    mediaType: 'image',
+    status: 'approved',
+    scheduledDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString(),
+  },
+  {
+    id: "POST003",
+    campaignId: "CAM002",
+    accountId: "act_2222",
+    content: "The future is here! Introducing the new X-series gadget. Pre-order yours today and experience the next level of tech. #Gadget #TechLaunch #Innovation",
+    mediaUrl: "https://placehold.co/1080x1920.png",
+    mediaType: 'image',
+    status: 'scheduled',
+    scheduledDate: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
+  },
+   {
+    id: "POST004",
+    campaignId: "CAM006",
+    accountId: "act_5555",
+    content: "Your garden's best friend is on sale! 🌱 Get all your spring planting essentials at Alice's Garden Supplies. #Gardening #SpringSale #PlantLove",
+    mediaUrl: "https://placehold.co/1080x1350.png",
+    mediaType: 'image',
+    status: 'posted',
+    scheduledDate: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+  },
+   {
+    id: "POST005",
+    campaignId: "CAM001",
+    accountId: "act_1111",
+    content: "This post was rejected. The image is not right.",
+    mediaUrl: "https://placehold.co/1080x1080.png",
+    mediaType: 'image',
+    status: 'rejected',
+    scheduledDate: new Date(new Date().setDate(new Date().getDate() + 8)).toISOString(),
+    rejectionReason: "The image quality is too low and not on-brand."
+  },
+];

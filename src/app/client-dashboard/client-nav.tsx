@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, BarChart, Settings } from "lucide-react";
+import { Home, Newspaper, Settings } from "lucide-react";
 
 export default function ClientNav({
   className,
@@ -17,6 +17,11 @@ export default function ClientNav({
       href: "/client-dashboard",
       label: "Dashboard",
       icon: Home,
+    },
+    {
+      href: "/client-dashboard/posts",
+      label: "Posts",
+      icon: Newspaper,
     },
     {
       href: "/client-dashboard/settings",

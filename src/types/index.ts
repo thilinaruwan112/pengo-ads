@@ -50,3 +50,15 @@ export type Account = {
   companyName: string; // Added company name
   campaigns: Campaign[];
 };
+
+export type Post = {
+    id: string;
+    campaignId: string;
+    accountId: string;
+    content: string;
+    mediaUrl: string;
+    mediaType: 'image' | 'video';
+    status: 'needs-approval' | 'approved' | 'rejected' | 'scheduled' | 'posted';
+    scheduledDate: string; // ISO 8601 format
+    rejectionReason?: string;
+};
