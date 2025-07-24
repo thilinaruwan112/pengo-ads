@@ -1,4 +1,5 @@
 
+
 import {
   Activity,
   DollarSign,
@@ -13,6 +14,8 @@ import { accounts } from "@/lib/data"
 import type { Campaign, DailyPerformance, Account } from "@/types"
 import { parseISO, isWithinInterval } from "date-fns"
 import { DashboardFilters } from "@/components/dashboard-filters"
+import { ClientReport, ClientReportData } from "@/components/client-report"
+import { CampaignReport, CampaignReportData } from "@/components/campaign-report"
 
 
 function getFilteredCampaigns(
@@ -140,6 +143,52 @@ function prepareCostData(campaigns: Campaign[]): { date: string; cost: number; c
     }));
 }
 
+function prepareClientReportData(campaigns: (Campaign & { companyName?: string, clientName?: string})[]): ClientReportData[] {
+  const clientMap = new Map<string, { companyName: string, reach: number, impressions: number, results: number, spent: number, campaigns: Set<string> }>();
+
+  campaigns.forEach(campaign => {
+    const clientKey = campaign.clientName || 'Unknown';
+    if (!clientMap.has(clientKey)) {
+      clientMap.set(clientKey, { companyName: campaign.companyName || 'Unknown', reach: 0, impressions: 0, results: 0, spent: 0, campaigns: new Set() });
+    }
+    const clientData = clientMap.get(clientKey)!;
+    clientData.campaigns.add(campaign.id);
+    campaign.dailyPerformance.forEach(record => {
+      clientData.reach += record.reach;
+      clientData.impressions += record.impressions;
+      clientData.results += record.results;
+      clientData.spent += record.amountSpent || 0;
+    });
+  });
+
+  return Array.from(clientMap.entries()).map(([client, data]) => ({
+    client,
+    companyName: data.companyName,
+    campaigns: data.campaigns.size,
+    reach: data.reach,
+    impressions: data.impressions,
+    results: data.results,
+    spent: data.spent,
+    cpr: data.results > 0 ? data.spent / data.results : 0,
+  }));
+}
+
+function prepareCampaignReportData(campaigns: (Campaign & { companyName?: string, clientName?: string})[]): CampaignReportData[] {
+    return campaigns.map(campaign => {
+        const performance = getAggregatePerformance([campaign]);
+        return {
+            name: campaign.name,
+            client: campaign.clientName || 'Unknown',
+            reach: performance.totalReach,
+            impressions: performance.totalImpressions,
+            results: performance.totalResults,
+            spent: performance.totalSpent,
+            cpr: performance.costPerResult,
+        };
+    }).filter(c => c.spent > 0);
+}
+
+
 export default async function Dashboard({
     searchParams,
 }: {
@@ -167,6 +216,9 @@ export default async function Dashboard({
   const platformData = preparePlatformData(filteredCampaigns);
   const costData = prepareCostData(filteredCampaigns);
   
+  const clientReportData = prepareClientReportData(filteredCampaigns);
+  const campaignReportData = prepareCampaignReportData(filteredCampaigns);
+
   const allAccounts = accounts;
   const allCampaignsForFilter = allCampaigns;
 
@@ -231,6 +283,13 @@ export default async function Dashboard({
       </div>
        <div className="grid gap-4 md:gap-8 lg:grid-cols-1 mt-6">
         <CostAnalysisChart data={costData} />
+      </div>
+
+      <div className="mt-6">
+        <ClientReport data={clientReportData} />
+      </div>
+        <div className="mt-6">
+        <CampaignReport data={campaignReportData} />
       </div>
     </>
   )
