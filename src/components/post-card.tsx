@@ -41,11 +41,11 @@ interface PostCardProps {
 }
 
 const statusConfig = {
-  'needs-approval': { label: 'Needs Approval', color: 'bg-yellow-500', icon: Clock },
-  'approved': { label: 'Approved', color: 'bg-green-500', icon: ThumbsUp },
-  'rejected': { label: 'Rejected', color: 'bg-red-500', icon: ThumbsDown },
-  'scheduled': { label: 'Scheduled', color: 'bg-blue-500', icon: Clock },
-  'posted': { label: 'Posted', color: 'bg-gray-500', icon: Check },
+  'needs-approval': { label: 'Needs Approval', color: 'bg-yellow-500 hover:bg-yellow-500/80', icon: Clock },
+  'approved': { label: 'Approved', color: 'bg-green-500 hover:bg-green-500/80', icon: ThumbsUp },
+  'rejected': { label: 'Rejected', color: 'bg-red-500 hover:bg-red-500/80', icon: ThumbsDown },
+  'scheduled': { label: 'Scheduled', color: 'bg-blue-500 hover:bg-blue-500/80', icon: Clock },
+  'posted': { label: 'Posted', color: 'bg-gray-500 hover:bg-gray-500/80', icon: Check },
 };
 
 
@@ -110,33 +110,70 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
           <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" data-ai-hint="social media post" />
         </div>
         <div className="flex-grow space-y-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-semibold text-sm">{company?.companyName || 'Unknown Company'}</p>
-                <p className="text-xs text-muted-foreground">{campaign?.name || 'Unknown Campaign'}</p>
-                <p className="text-xs text-muted-foreground pt-1">
-                  Scheduled for: {format(parseISO(post.scheduledDate), "MMM d, h:mm a")}
-                </p>
+            <div className="flex justify-between items-start gap-2">
+              <div className="flex-grow">
+                  <p className="font-semibold">{company?.companyName || 'Unknown Company'}</p>
+                  <p className="text-xs text-muted-foreground">{campaign?.name || 'Unknown Campaign'}</p>
               </div>
-              <Badge className={cn("capitalize text-white text-xs", currentStatus.color)}>
-                  <currentStatus.icon className="h-3 w-3 mr-1" />
-                  {currentStatus.label}
-              </Badge>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge className={cn("capitalize text-white text-xs", currentStatus.color)}>
+                    <currentStatus.icon className="h-3 w-3 mr-1" />
+                    {currentStatus.label}
+                </Badge>
+                {!isClientView && (
+                  <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                              <MoreVertical className="h-4 w-4" />
+                          </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
+                              <Edit className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                          <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
+                                      <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                  </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                          This action cannot be undone. This will permanently delete the post.
+                                      </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={handleDelete} className={buttonVariants({variant: "destructive"})}>
+                                          Delete
+                                      </AlertDialogAction>
+                                  </AlertDialogFooter>
+                              </AlertDialogContent>
+                          </AlertDialog>
+                      </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
             </div>
           
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="text-sm text-muted-foreground pt-1">
               {post.content}
             </p>
 
+             <p className="text-xs text-muted-foreground pt-2">
+                Scheduled for: {format(parseISO(post.scheduledDate), "MMM d, h:mm a")}
+            </p>
+
             {post.status === 'rejected' && post.rejectionReason && (
-              <div className="p-2 bg-destructive/10 text-destructive text-xs rounded-md border border-destructive/20">
+              <div className="p-2 bg-destructive/10 text-destructive text-xs rounded-md border border-destructive/20 mt-2">
                   <strong>Rejection Reason:</strong> {post.rejectionReason}
               </div>
             )}
-        </div>
-        <div className="flex flex-col items-center gap-2">
+            
             {isClientView && post.status === 'needs-approval' && (
-              <div className="flex flex-col sm:flex-row md:flex-col gap-2">
+              <div className="flex flex-row gap-2 pt-2">
                   <Button variant="outline" size="sm" onClick={() => handleStatusChange('rejected')}>
                        Reject
                   </Button>
@@ -144,41 +181,6 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
                       Approve
                   </Button>
               </div>
-            )}
-            {!isClientView && (
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                      </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
-                                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                              </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                              <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      This action cannot be undone. This will permanently delete the post.
-                                  </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={handleDelete} className={buttonVariants({variant: "destructive"})}>
-                                      Delete
-                                  </AlertDialogAction>
-                              </AlertDialogFooter>
-                          </AlertDialogContent>
-                      </AlertDialog>
-                  </DropdownMenuContent>
-              </DropdownMenu>
             )}
         </div>
       </CardContent>
