@@ -24,7 +24,7 @@ export default async function CampaignsPage() {
 
   return (
     <div className="container mx-auto py-2">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
         <div>
           <h1 className="text-2xl font-bold">Campaigns</h1>
           <p className="text-muted-foreground">
