@@ -190,10 +190,10 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
                 </div>
                 {!isClient && (
                     <div className="space-y-2">
-                        <Label htmlFor="client-account">Client Account</Label>
+                        <Label htmlFor="company-account">Company</Label>
                         <Select value={selectedAccount} onValueChange={handleAccountChange}>
-                            <SelectTrigger id="client-account">
-                                <SelectValue placeholder="Select an account" />
+                            <SelectTrigger id="company-account">
+                                <SelectValue placeholder="Select a company" />
                             </SelectTrigger>
                             <SelectContent>
                                 {clientAccounts.map(acc => (
