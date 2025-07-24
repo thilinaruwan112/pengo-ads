@@ -1,3 +1,4 @@
+
 export type User = {
   id: string;
   name: string;
@@ -49,6 +50,15 @@ export type Account = {
   clientName: string;
   companyName: string; // Added company name
   campaigns: Campaign[];
+  logoUrl?: string;
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    linkedin?: string;
+    twitter?: string;
+  },
+  address?: string;
+  employeeRange?: string;
 };
 
 export type Post = {

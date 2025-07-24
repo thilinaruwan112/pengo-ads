@@ -1,3 +1,4 @@
+
 import { User, Campaign, Account, Post } from "@/types";
 
 export const users: User[] = [
@@ -7,13 +8,21 @@ export const users: User[] = [
   { id: "USR004", name: "Diana Prince", email: "diana@example.com", role: "client", avatar: "/avatars/04.png", status: "active", adAccountIds: ["act_4444"] },
 ];
 
-export const accounts: Account[] = [
+export let accounts: Account[] = [
   {
     id: "act_1111",
     name: "Alice Johnson's Account",
     accessToken: "ALICE_FAKE_TOKEN",
     clientName: "Alice Johnson",
     companyName: "Alice's Awesome Widgets",
+    logoUrl: "https://placehold.co/100x100.png",
+    address: "123 Widget Lane, Tech City, 12345",
+    employeeRange: "11-50",
+    socialLinks: {
+        facebook: "https://facebook.com/alicewidgets",
+        instagram: "https://instagram.com/alicewidgets",
+        linkedin: "https://linkedin.com/company/alicewidgets",
+    },
     campaigns: [
       {
         id: "CAM001",
@@ -121,6 +130,9 @@ export const accounts: Account[] = [
     accessToken: "ALICE_FAKE_TOKEN_2",
     clientName: "Alice Johnson",
     companyName: "Alice's Garden Supplies",
+    logoUrl: "https://placehold.co/100x100.png",
+    address: "456 Bloom Ave, Flora Town, 54321",
+    employeeRange: "1-10",
     campaigns: [
        {
         id: "CAM006",
@@ -150,6 +162,7 @@ export const accounts: Account[] = [
     accessToken: "BOB_FAKE_TOKEN",
     clientName: "Bob Williams",
     companyName: "Bob's Burger Bar",
+    logoUrl: "https://placehold.co/100x100.png",
     campaigns: [
        {
         id: "CAM002",
@@ -178,6 +191,7 @@ export const accounts: Account[] = [
     accessToken: "CHARLIE_FAKE_TOKEN",
     clientName: "Charlie Brown",
     companyName: "Charlie's Cybernetics",
+    logoUrl: "https://placehold.co/100x100.png",
     campaigns: [
       {
         id: "CAM003",
@@ -207,6 +221,7 @@ export const accounts: Account[] = [
     accessToken: "DIANA_FAKE_TOKEN",
     clientName: "Diana Prince",
     companyName: "Diana's Dazzlers",
+    logoUrl: "https://placehold.co/100x100.png",
     campaigns: [
         {
         id: "CAM004",

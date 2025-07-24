@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, BarChart, Settings, Newspaper, Upload } from "lucide-react";
+import { Home, Users, BarChart, Settings, Newspaper, Upload, Building } from "lucide-react";
 
 export function MainNav({
   className,
@@ -23,6 +23,11 @@ export function MainNav({
       href: "/dashboard/campaigns",
       label: "Campaigns",
       icon: BarChart,
+    },
+    {
+      href: "/dashboard/companies",
+      label: "Companies",
+      icon: Building,
     },
     {
       href: "/dashboard/clients",
