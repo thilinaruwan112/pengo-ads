@@ -57,9 +57,9 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
     }
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex w-full sm:w-auto gap-2">
             <Select value={accountId} onValueChange={handleAccountChange}>
-                <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectTrigger className="w-full">
                     <SelectValue placeholder="Filter by client..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -72,7 +72,7 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
                 </SelectContent>
             </Select>
             <Select value={campaignId} onValueChange={handleCampaignChange}>
-                <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectTrigger className="w-full">
                     <SelectValue placeholder="Filter by campaign..." />
                 </SelectTrigger>
                 <SelectContent>

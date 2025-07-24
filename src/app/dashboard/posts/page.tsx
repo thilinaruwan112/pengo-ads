@@ -53,7 +53,7 @@ export default async function PostsPage({
             Review and manage all scheduled posts.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <PostFilters accounts={accountsData} allCampaigns={campaigns} />
             <CreatePostDialog accounts={accountsData} campaigns={campaigns} />
         </div>
