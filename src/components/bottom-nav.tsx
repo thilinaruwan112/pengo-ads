@@ -53,7 +53,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
           >
             <div className={cn(
                 "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-primary/5",
-                 isActive && 'bg-primary/10 text-primary -translate-y-2 shadow-lg'
+                 isActive && 'bg-primary/10 text-primary -translate-y-4 shadow-lg'
             )}>
                  <route.icon className={cn("w-6 h-6", isActive ? "text-primary": "text-muted-foreground")} />
             </div>
