@@ -158,7 +158,7 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
               </div>
             </div>
           
-            <p className="text-sm text-muted-foreground pt-1">
+            <p className="text-sm text-muted-foreground pt-1 hidden md:block">
               {post.content}
             </p>
 
