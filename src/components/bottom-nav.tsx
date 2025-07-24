@@ -38,7 +38,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
   const routes = client ? getClientRoutes() : getAdminRoutes();
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background border-t md:hidden pb-2">
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background border-t md:hidden pb-10">
       <div className="grid h-full max-w-lg mx-auto" style={{ gridTemplateColumns: `repeat(${routes.length}, 1fr)` }}>
         {routes.map((route) => {
           const isActive = route.active;
