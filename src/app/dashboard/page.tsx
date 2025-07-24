@@ -13,8 +13,6 @@ import { accounts } from "@/lib/data"
 import type { Campaign, DailyPerformance, Account } from "@/types"
 import { parseISO, isWithinInterval } from "date-fns"
 import { DashboardFilters } from "@/components/dashboard-filters"
-import { ClientReportTable } from "@/components/client-report-table"
-import { CampaignReportTable } from "@/components/campaign-report-table"
 
 
 function getFilteredCampaigns(
@@ -142,47 +140,6 @@ function prepareCostData(campaigns: Campaign[]): { date: string; cost: number; c
     }));
 }
 
-function prepareClientReport(campaigns: (Campaign & { companyName?: string; clientName?: string; })[]): any[] {
-    const clientReport: { [key: string]: { reach: number; impressions: number; results: number; spent: number; campaigns: number } } = {};
-
-    campaigns.forEach(campaign => {
-        const clientKey = campaign.companyName || 'Unknown';
-        if (!clientReport[clientKey]) {
-            clientReport[clientKey] = { reach: 0, impressions: 0, results: 0, spent: 0, campaigns: 0 };
-        }
-        const report = clientReport[clientKey];
-        report.campaigns += 1;
-        campaign.dailyPerformance.forEach(record => {
-            report.reach += record.reach;
-            report.impressions += record.impressions;
-            report.results += record.results;
-            report.spent += record.amountSpent || 0;
-        });
-    });
-
-    return Object.entries(clientReport).map(([client, data]) => ({
-        client,
-        ...data,
-        cpr: data.results > 0 ? data.spent / data.results : 0,
-    }));
-}
-
-function prepareCampaignReport(campaigns: (Campaign & { companyName?: string; })[]): any[] {
-    return campaigns.map(campaign => {
-        const performance = getAggregatePerformance([campaign]);
-        return {
-            name: campaign.name,
-            client: campaign.companyName,
-            reach: performance.totalReach,
-            impressions: performance.totalImpressions,
-            results: performance.totalResults,
-            spent: performance.totalSpent,
-            cpr: performance.costPerResult,
-        };
-    });
-}
-
-
 export default async function Dashboard({
     searchParams,
 }: {
@@ -209,8 +166,6 @@ export default async function Dashboard({
   const overviewData = prepareOverviewData(filteredCampaigns);
   const platformData = preparePlatformData(filteredCampaigns);
   const costData = prepareCostData(filteredCampaigns);
-  const clientReportData = prepareClientReport(filteredCampaigns);
-  const campaignReportData = prepareCampaignReport(filteredCampaigns);
   
   const allAccounts = accounts;
   const allCampaignsForFilter = allCampaigns;
@@ -276,11 +231,6 @@ export default async function Dashboard({
       </div>
        <div className="grid gap-4 md:gap-8 lg:grid-cols-1 mt-6">
         <CostAnalysisChart data={costData} />
-      </div>
-
-       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 mt-6">
-        <ClientReportTable data={clientReportData} />
-        <CampaignReportTable data={campaignReportData} />
       </div>
     </>
   )
