@@ -175,7 +175,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
   const isSaveDisabled = isSubmitting || !content || !scheduledDate || !selectedAccountId || !selectedCampaignId;
 
   const triggerText = isClient ? 'Create Post' : 'Create Post';
-  const trigger = !isEditMode ? <Button>{triggerText}</Button> : null;
+  const trigger = !isEditMode ? <Button className="w-full md:w-auto">{triggerText}</Button> : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -57,7 +57,7 @@ export function PostFilters({ accounts, allCampaigns }: PostFiltersProps) {
     }
 
     return (
-        <div className="flex w-full sm:w-auto gap-2">
+        <div className="flex w-full gap-2">
             <Select value={accountId} onValueChange={handleAccountChange}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Filter by client..." />
