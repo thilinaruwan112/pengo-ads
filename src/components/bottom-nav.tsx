@@ -47,7 +47,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
             key={route.href}
             href={route.href}
             className={cn(
-              "relative inline-flex flex-col items-center justify-end font-medium group h-full pb-1",
+              "relative inline-flex flex-col items-center justify-center font-medium group",
               isActive ? 'text-primary' : 'text-muted-foreground'
             )}
           >
@@ -62,7 +62,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
             </div>
             
             <div className={cn(
-                "absolute bottom-0 h-1 w-6 rounded-full bg-primary transition-all duration-300",
+                "absolute bottom-1 h-1 w-6 rounded-full bg-primary transition-all duration-300",
                 isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
             )} />
 
