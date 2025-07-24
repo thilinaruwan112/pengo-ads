@@ -1,17 +1,14 @@
 
 import { EditCampaignForm } from "./edit-form";
 import type { Campaign } from "@/types";
-import { campaigns } from "@/lib/data";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 async function getCampaign(id: string): Promise<Campaign | undefined> {
-  // In a real app, you'd fetch this from your API
-  // const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${id}`);
-  // if (!res.ok) return undefined;
-  // return res.json();
-  return campaigns.find(c => c.id === id);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${id}`, { cache: 'no-store' });
+  if (!res.ok) return undefined;
+  return res.json();
 }
 
 export default async function EditCampaignPage({ params }: { params: { id: string } }) {

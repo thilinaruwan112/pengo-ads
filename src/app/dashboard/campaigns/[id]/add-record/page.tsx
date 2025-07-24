@@ -62,7 +62,7 @@ export default function AddDailyRecordPage() {
     };
 
     try {
-        const response = await fetch(`/api/campaigns/${campaignId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${campaignId}`, {
             method: 'POST', // We use POST on the [id] route to add a sub-resource
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newRecord),

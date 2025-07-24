@@ -53,7 +53,7 @@ export function EditCampaignForm({ campaign }: EditCampaignFormProps) {
     };
 
     try {
-        const response = await fetch(`/api/campaigns/${campaign.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${campaign.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedCampaign),

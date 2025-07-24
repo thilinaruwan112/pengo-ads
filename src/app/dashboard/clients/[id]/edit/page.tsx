@@ -1,19 +1,20 @@
 
 import { EditClientForm } from "./edit-form";
 import type { User, Account } from "@/types";
-import { users, accounts } from "@/lib/data";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 async function getClient(id: string): Promise<User | undefined> {
-  // In a real app, you'd fetch this from your API
-  return users.find(u => u.id === id && u.role === 'client');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/${id}`, { cache: 'no-store' });
+  if (!res.ok) return undefined;
+  return res.json();
 }
 
 async function getAllAccounts(): Promise<Account[]> {
-    // In a real app, this would be an API call
-    return accounts;
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/companies`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return res.json();
 }
 
 export default async function EditClientPage({ params }: { params: { id: string } }) {

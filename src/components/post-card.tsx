@@ -64,7 +64,7 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
     }
 
     try {
-        const response = await fetch(`/api/posts/${post.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts/${post.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus, rejectionReason }),
@@ -88,7 +88,7 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
 
   const handleDelete = async () => {
     try {
-        const response = await fetch(`/api/posts/${post.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts/${post.id}`, {
             method: 'DELETE',
         });
 

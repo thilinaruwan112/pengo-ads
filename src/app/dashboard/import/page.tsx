@@ -155,7 +155,7 @@ export default function ImportPage() {
     let createdCount = 0;
 
     try {
-        const campaignsRes = await fetch('/api/campaigns', { cache: 'no-store' });
+        const campaignsRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
         if (!campaignsRes.ok) throw new Error("Could not fetch existing campaigns.");
         const existingCampaigns: Campaign[] = await campaignsRes.json();
 
@@ -185,7 +185,7 @@ export default function ImportPage() {
             let campaign = existingCampaigns.find(c => c.name === campaignName);
 
             if (campaign) {
-                const res = await fetch(`/api/campaigns/${campaign.id}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${campaign.id}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(performanceRecord)
@@ -196,7 +196,7 @@ export default function ImportPage() {
                 }
                 updatedCount++;
             } else {
-                 const accountsRes = await fetch('/api/users'); 
+                 const accountsRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`); 
                  const users = await accountsRes.json();
                  const firstClientAccount = users.find((u:any) => u.role === 'client')?.adAccountIds[0];
 
@@ -221,7 +221,7 @@ export default function ImportPage() {
                     linked: true
                 };
 
-                 const createRes = await fetch('/api/campaigns', {
+                 const createRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newCampaignData),

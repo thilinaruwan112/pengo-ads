@@ -138,7 +138,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
       status,
     };
     
-    const url = isEditMode ? `/api/posts/${postToEdit.id}` : '/api/posts';
+    const url = isEditMode ? `${process.env.NEXT_PUBLIC_URL}/api/posts/${postToEdit.id}` : `${process.env.NEXT_PUBLIC_URL}/api/posts`;
     const method = isEditMode ? 'PATCH' : 'POST';
 
     try {

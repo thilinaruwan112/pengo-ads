@@ -72,7 +72,7 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
       socialLinks: { facebook, instagram, linkedin, twitter },
     };
 
-    const url = isNew ? `/api/companies` : `/api/companies/${company?.id}`;
+    const url = isNew ? `${process.env.NEXT_PUBLIC_URL}/api/companies` : `${process.env.NEXT_PUBLIC_URL}/api/companies/${company?.id}`;
     const method = isNew ? 'POST' : 'PATCH';
 
     try {
@@ -93,7 +93,7 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
                 const oldClient = clients.find(c => c.id === initialClientId);
                 if (oldClient) {
                     const updatedAdAccountIds = oldClient.adAccountIds.filter(id => id !== savedCompany.id);
-                     await fetch(`/api/users/${oldClient.id}`, {
+                     await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/${oldClient.id}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
@@ -104,7 +104,7 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
             const newClient = clients.find(c => c.id === selectedClientId);
              if (newClient) {
                 const updatedAdAccountIds = [...newClient.adAccountIds, savedCompany.id];
-                await fetch(`/api/users/${newClient.id}`, {
+                await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/${newClient.id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
