@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import type { Account } from "@/types";
+import type { Account, User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,14 +15,15 @@ import { Textarea } from "@/components/ui/textarea";
 interface EditCompanyFormProps {
     company: Account | null;
     isNew: boolean;
+    clients: User[];
 }
 
-export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
+export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProps) {
   const router = useRouter();
   const { toast } = useToast();
 
   const [companyName, setCompanyName] = useState(company?.companyName || "");
-  const [clientName, setClientName] = useState(company?.clientName || "");
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
   const [logoUrl, setLogoUrl] = useState(company?.logoUrl || "");
   const [address, setAddress] = useState(company?.address || "");
   const [employeeRange, setEmployeeRange] = useState(company?.employeeRange || "");
@@ -32,11 +33,35 @@ export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
   const [twitter, setTwitter] = useState(company?.socialLinks?.twitter || "");
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // In edit mode, we need to find which client this company belongs to.
+  // This is a bit complex with the current data structure, so we'll disable changing it on edit.
+  const getInitialClientId = () => {
+    if (company) {
+        const client = clients.find(c => c.adAccountIds.includes(company.id));
+        return client?.id;
+    }
+    return undefined;
+  }
+  const initialClientId = getInitialClientId();
+
 
   const handleSave = async () => {
     setIsSubmitting(true);
     
-    const updatedCompanyData: Partial<Account> = {
+    const selectedClient = clients.find(c => c.id === selectedClientId);
+
+    if (isNew && !selectedClient) {
+        toast({ title: "Error", description: "You must select a client.", variant: "destructive" });
+        setIsSubmitting(false);
+        return;
+    }
+
+    // When creating, clientName is derived from selected client.
+    // When editing, it's not changed via this form.
+    const clientName = isNew ? selectedClient!.name : company!.clientName;
+    
+    const companyData: Partial<Account> = {
       companyName,
       clientName,
       logoUrl,
@@ -52,10 +77,23 @@ export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
         const response = await fetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedCompanyData),
+            body: JSON.stringify(companyData),
         });
 
         if (!response.ok) throw new Error(`Failed to ${isNew ? 'create' : 'update'} company`);
+        
+        const savedCompany = await response.json();
+
+        // If new, we need to associate it with the client
+        if (isNew && selectedClient) {
+            const updatedAdAccountIds = [...selectedClient.adAccountIds, savedCompany.id];
+            const userUpdateRes = await fetch(`/api/users/${selectedClient.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
+            });
+            if (!userUpdateRes.ok) throw new Error('Failed to associate company with client.');
+        }
 
         toast({
             title: isNew ? "Company Created" : "Company Updated",
@@ -63,10 +101,10 @@ export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
         });
         router.push("/dashboard/companies");
         router.refresh();
-    } catch (error) {
+    } catch (error: any) {
          toast({
             title: "Error",
-            description: `Could not save company details.`,
+            description: error.message || `Could not save company details.`,
             variant: "destructive"
         });
     } finally {
@@ -74,7 +112,7 @@ export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
     }
   };
 
-  const isSaveDisabled = isSubmitting || !companyName;
+  const isSaveDisabled = isSubmitting || !companyName || (isNew && !selectedClientId);
 
   return (
     <div className="grid gap-6">
@@ -96,13 +134,24 @@ export function EditCompanyForm({ company, isNew }: EditCompanyFormProps) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="client-name">Primary Contact Name</Label>
-                            <Input
-                                id="client-name"
-                                value={clientName}
-                                onChange={(e) => setClientName(e.target.value)}
-                                placeholder="e.g., John Doe"
-                            />
+                            <Label htmlFor="client-name">Primary Client</Label>
+                             <Select 
+                                value={isNew ? selectedClientId : initialClientId} 
+                                onValueChange={setSelectedClientId}
+                                disabled={!isNew}
+                            >
+                                <SelectTrigger id="client-name">
+                                    <SelectValue placeholder="Select a client..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {clients.map(client => (
+                                        <SelectItem key={client.id} value={client.id}>
+                                            {client.name} ({client.email})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {!isNew && <p className="text-xs text-muted-foreground">To change the client, please edit the client's record.</p>}
                         </div>
                     </div>
 

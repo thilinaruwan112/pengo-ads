@@ -1,7 +1,6 @@
 
 import { EditCompanyForm } from "./edit-form";
-import type { Account } from "@/types";
-import { accounts } from "@/lib/data";
+import type { Account, User } from "@/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -13,10 +12,18 @@ async function getCompany(id: string): Promise<Account | undefined> {
   return res.json();
 }
 
+async function getClients(): Promise<User[]> {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const allUsers = await res.json();
+    return allUsers.filter((u: User) => u.role === 'client');
+}
+
 export default async function EditCompanyPage({ params }: { params: { id: string } }) {
   // Check for 'new' to handle creation
   const isNew = params.id === 'new';
   const company = isNew ? null : await getCompany(params.id);
+  const clients = await getClients();
 
   if (!isNew && !company) {
     return (
@@ -54,7 +61,7 @@ export default async function EditCompanyPage({ params }: { params: { id: string
           </p>
         </div>
       </div>
-      <EditCompanyForm company={company} isNew={isNew} />
+      <EditCompanyForm company={company} isNew={isNew} clients={clients} />
     </div>
   );
 }
