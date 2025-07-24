@@ -1,5 +1,5 @@
 
-"use client";
+"use client"
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { accounts, users } from "@/lib/data";
+import { accounts as mockAccounts, users as mockUsers } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Campaign, Account, DailyPerformance, User } from "@/types";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ interface CreateCampaignDialogProps {
     clientAccounts?: Account[];
 }
 
-export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts: initialClientAccounts = accounts }: CreateCampaignDialogProps) {
+export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts: initialClientAccounts = mockAccounts }: CreateCampaignDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,17 +70,16 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
   const [linkClicks, setLinkClicks] = useState("");
 
   useEffect(() => {
-    // In a real app, you'd fetch this. For now, using mock data.
-    setClients(users.filter(u => u.role === 'client'));
+    setClients(mockUsers.filter(u => u.role === 'client'));
   }, []);
 
   useEffect(() => {
     if (isClient) {
         setFilteredAccounts(initialClientAccounts);
     } else if (selectedClientId) {
-        const client = users.find(u => u.id === selectedClientId);
+        const client = mockUsers.find(u => u.id === selectedClientId);
         if (client) {
-            setFilteredAccounts(accounts.filter(acc => client.adAccountIds.includes(acc.id)));
+            setFilteredAccounts(mockAccounts.filter(acc => client.adAccountIds.includes(acc.id)));
         }
     } else {
         setFilteredAccounts([]);
@@ -142,42 +141,41 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
         linkClicks: parseInt(linkClicks) || 0,
     }
 
-    const newCampaignData = {
-      accountId: selectedAccount,
-      name,
-      description,
-      status,
-      platform,
-      age,
-      gender,
-      pageName,
-      attributionSetting,
-      resultType,
-      currency,
-      dailyPerformance: [initialPerformance]
+    const newCampaign: Campaign = {
+        id: `CAM${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        name,
+        description,
+        status,
+        platform,
+        age,
+        gender,
+        pageName,
+        attributionSetting,
+        resultType,
+        currency,
+        dailyPerformance: [initialPerformance],
+        linked: true,
     };
-
+    
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newCampaignData),
-        });
-
-        if (!response.ok) throw new Error('Failed to create campaign');
+        const account = mockAccounts.find(acc => acc.id === selectedAccount);
+        if (!account) {
+            throw new Error("Account not found");
+        }
+        account.campaigns.push(newCampaign);
         
         toast({
             title: "Campaign Created",
-            description: "Your new campaign has been successfully saved.",
+            description: "Your new campaign has been successfully saved. (Note: Changes are in-memory).",
         });
         
         setOpen(false);
         resetForm();
         router.refresh(); 
-    } catch (error) {
+    } catch (error: any) {
         toast({
             title: "Error",
-            description: "Could not save the new campaign.",
+            description: error.message || "Could not save the new campaign.",
             variant: "destructive"
         });
     } finally {

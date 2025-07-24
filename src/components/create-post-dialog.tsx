@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { cn } from "@/lib/utils"
 import { Check, ThumbsDown, Clock, ThumbsUp } from "lucide-react"
-import { users } from "@/lib/data"
+import { users as mockUsers, posts, accounts as mockAccounts } from "@/lib/data"
 
 interface CreatePostDialogProps {
     accounts: Account[];
@@ -67,8 +67,7 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
   const [filteredCampaigns, setFilteredCampaigns] = useState<(Campaign & { companyName: string })[]>([]);
 
   useEffect(() => {
-    // In a real app, you'd fetch this. For now, using mock data.
-    setClients(users.filter(u => u.role === 'client'));
+    setClients(mockUsers.filter(u => u.role === 'client'));
   }, []);
 
   useEffect(() => {
@@ -133,29 +132,28 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
       mediaUrl: mediaUrl || "https://placehold.co/1080x1080.png", // Default placeholder
       mediaType: 'image' as const,
       scheduledDate: new Date(scheduledDate).toISOString(),
-      accountId: selectedAccountId,
-      campaignId: selectedCampaignId,
+      accountId: selectedAccountId!,
+      campaignId: selectedCampaignId!,
       status,
     };
     
-    const url = isEditMode ? `${process.env.NEXT_PUBLIC_URL}/api/posts/${postToEdit.id}` : `${process.env.NEXT_PUBLIC_URL}/api/posts`;
-    const method = isEditMode ? 'PATCH' : 'POST';
-
     try {
-        const response = await fetch(url, {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(postData),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to save post');
+        if (isEditMode) {
+            const postIndex = posts.findIndex(p => p.id === postToEdit.id);
+            if (postIndex !== -1) {
+                posts[postIndex] = { ...posts[postIndex], ...postData };
+            }
+        } else {
+            const newPost: Post = {
+                id: `POST${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+                ...postData,
+            };
+            posts.unshift(newPost);
         }
         
         toast({
             title: isEditMode ? "Post Updated" : "Post Created",
-            description: `The post has been successfully ${isEditMode ? 'updated' : 'saved'}.`,
+            description: `The post has been successfully ${isEditMode ? 'updated' : 'saved'}. (Note: Changes are in-memory).`,
         });
         
         setOpen(false);

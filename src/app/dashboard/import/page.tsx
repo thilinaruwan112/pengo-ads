@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, ChevronsRight } from "lucide-react"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { accounts as mockAccounts, users as mockUsers } from "@/lib/data"
 
 const formatDate = (date: Date) => {
     const d = new Date(date);
@@ -155,9 +156,7 @@ export default function ImportPage() {
     let createdCount = 0;
 
     try {
-        const campaignsRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
-        if (!campaignsRes.ok) throw new Error("Could not fetch existing campaigns.");
-        const existingCampaigns: Campaign[] = await campaignsRes.json();
+        const existingCampaigns: Campaign[] = mockAccounts.flatMap(acc => acc.campaigns);
 
         for (const row of data) {
             const campaignName = row[columnMap['campaignName']];
@@ -183,36 +182,31 @@ export default function ImportPage() {
             };
 
             let campaign = existingCampaigns.find(c => c.name === campaignName);
+            let accountForCampaign = mockAccounts.find(acc => acc.campaigns.some(c => c.id === campaign?.id));
 
-            if (campaign) {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${campaign.id}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(performanceRecord)
-                });
-                if (!res.ok) {
-                    console.warn(`Failed to add record for campaign: ${campaignName}`);
-                    continue;
-                }
+            if (campaign && accountForCampaign) {
+                // In a real app, you would save this to a database.
+                campaign.dailyPerformance.push(performanceRecord);
+                // Sort by date descending to have the newest record first
+                campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                 updatedCount++;
             } else {
-                 const accountsRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`); 
-                 const users = await accountsRes.json();
-                 const firstClientAccount = users.find((u:any) => u.role === 'client')?.adAccountIds[0];
+                 const firstClientAccount = mockUsers.find((u:any) => u.role === 'client')?.adAccountIds[0];
+                 const account = mockAccounts.find(acc => acc.id === firstClientAccount);
 
-                 if (!firstClientAccount) {
+                 if (!account) {
                     console.warn(`No client account found to create new campaign: ${campaignName}`);
                     continue;
                  }
                 
-                const newCampaignData = {
-                    accountId: firstClientAccount,
+                const newCampaign: Campaign = {
+                    id: `CAM${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
                     name: campaignName,
                     description: `Imported on ${new Date().toLocaleDateString()}`,
                     status: 'active',
-                    platform: getStr('platform') || 'Facebook',
+                    platform: 'Facebook',
                     age: getStr('age'),
-                    gender: getStr('gender'),
+                    gender: getStr('gender') as any,
                     pageName: getStr('pageName'),
                     attributionSetting: getStr('attributionSetting'),
                     resultType: getStr('resultType'),
@@ -221,22 +215,14 @@ export default function ImportPage() {
                     linked: true
                 };
 
-                 const createRes = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newCampaignData),
-                });
-                 if (!createRes.ok) {
-                    console.warn(`Failed to create campaign: ${campaignName}`);
-                    continue;
-                }
+                account.campaigns.push(newCampaign);
                 createdCount++;
             }
         }
         
         toast({
             title: "Import Complete",
-            description: `${updatedCount} campaign(s) updated, ${createdCount} campaign(s) created.`,
+            description: `${updatedCount} campaign(s) updated, ${createdCount} campaign(s) created. (Note: Changes are in-memory and will reset on page refresh).`,
         })
 
         router.push("/dashboard/campaigns");
@@ -374,5 +360,3 @@ export default function ImportPage() {
     </div>
   );
 }
-
-    

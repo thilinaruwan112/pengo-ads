@@ -4,17 +4,14 @@ import type { User, Account } from "@/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { users, accounts } from "@/lib/data";
 
 async function getClient(id: string): Promise<User | undefined> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/${id}`, { cache: 'no-store' });
-  if (!res.ok) return undefined;
-  return res.json();
+  return users.find(u => u.id === id);
 }
 
 async function getAllAccounts(): Promise<Account[]> {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/companies`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    return res.json();
+    return accounts;
 }
 
 export default async function EditClientPage({ params }: { params: { id: string } }) {

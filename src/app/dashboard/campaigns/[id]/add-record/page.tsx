@@ -14,6 +14,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { accounts } from "@/lib/data";
 
 
 export default function AddDailyRecordPage() {
@@ -62,24 +63,25 @@ export default function AddDailyRecordPage() {
     };
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${campaignId}`, {
-            method: 'POST', // We use POST on the [id] route to add a sub-resource
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newRecord),
-        });
+        const account = accounts.find(acc => acc.campaigns.some(c => c.id === campaignId));
+        if (!account) throw new Error("Could not find account for this campaign.");
 
-        if (!response.ok) throw new Error('Failed to add record');
-
+        const campaign = account.campaigns.find(c => c.id === campaignId);
+        if (!campaign) throw new Error("Could not find this campaign.");
+        
+        campaign.dailyPerformance.push(newRecord);
+        campaign.dailyPerformance.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
         toast({
             title: "Record Added",
-            description: "The daily performance record has been successfully added.",
+            description: "The daily performance record has been successfully added. (Note: Changes are in-memory).",
         });
         router.push(`/dashboard/campaigns/${campaignId}/edit`);
         router.refresh();
-    } catch (error) {
+    } catch (error: any) {
          toast({
             title: "Error",
-            description: "Could not save the daily record.",
+            description: error.message || "Could not save the daily record.",
             variant: "destructive"
         });
     } finally {

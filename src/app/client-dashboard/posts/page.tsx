@@ -1,5 +1,5 @@
 import { PostCard } from "@/components/post-card"
-import { users, accounts } from "@/lib/data"
+import { users, accounts, posts as allPosts } from "@/lib/data"
 import type { Post, User, Account, Campaign } from "@/types"
 import { redirect } from "next/navigation"
 
@@ -17,12 +17,17 @@ async function getClientUser(
 }
 
 async function getClientPosts(adAccountId: string): Promise<Post[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts?adAccountId=${adAccountId}`, { cache: 'no-store' });
-  if (!res.ok) {
-    console.error(`Failed to fetch posts for account ${adAccountId}`);
-    return []
-  }
-  return res.json()
+  const account = accounts.find(acc => acc.id === adAccountId);
+  if (!account) return [];
+
+  const accountPosts = allPosts
+    .filter(p => p.accountId === adAccountId)
+    .map(post => ({
+        ...post,
+        companyName: account.companyName,
+        clientName: account.clientName,
+    }));
+  return accountPosts;
 }
 
 async function getAccounts(): Promise<Account[]> {

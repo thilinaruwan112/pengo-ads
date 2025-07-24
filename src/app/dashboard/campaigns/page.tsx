@@ -5,14 +5,18 @@ import type { Campaign } from "@/types"
 import { CampaignCard } from "./campaign-card"
 import { CreateCampaignDialog } from "@/components/create-campaign-dialog"
 import { ExcelImporter } from "@/components/excel-importer"
+import { accounts } from "@/lib/data"
 
 async function getCampaigns(): Promise<Campaign[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error('Failed to fetch data')
-  }
- 
-  return res.json()
+  // In a real app, you would fetch this from a database
+  const allCampaigns = accounts.flatMap(acc => 
+      acc.campaigns.map(c => ({ 
+        ...c, 
+        client: acc.clientName, 
+        companyName: acc.companyName 
+      }))
+    );
+  return allCampaigns;
 }
 
 export default async function CampaignsPage() {

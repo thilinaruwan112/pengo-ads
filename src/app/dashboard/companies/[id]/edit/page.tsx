@@ -4,19 +4,14 @@ import type { Account, User } from "@/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { accounts, users } from "@/lib/data";
 
 async function getCompany(id: string): Promise<Account | undefined> {
-  // In a real app, you'd fetch this from your API
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/companies/${id}`, { cache: 'no-store' });
-  if (!res.ok) return undefined;
-  return res.json();
+  return accounts.find(a => a.id === id);
 }
 
 async function getClients(): Promise<User[]> {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const allUsers = await res.json();
-    return allUsers.filter((u: User) => u.role === 'client');
+    return users.filter((u: User) => u.role === 'client');
 }
 
 export default async function EditCompanyPage({ params }: { params: { id: string } }) {

@@ -32,6 +32,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useState } from "react"
+import { posts } from "@/lib/data"
 
 
 interface PostCardProps {
@@ -63,44 +64,38 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
         if (rejectionReason === null) return; // User cancelled prompt
     }
 
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts/${post.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus, rejectionReason }),
-        });
-
-        if (!response.ok) throw new Error('Failed to update status');
-        
-        toast({
-            title: `Post ${newStatus}`,
-            description: "The post status has been updated.",
-        });
-        router.refresh();
-    } catch (error) {
-         toast({
-            title: "Error",
-            description: "Could not update the post status.",
-            variant: "destructive"
-        });
+    // In-memory update
+    const postIndex = posts.findIndex(p => p.id === post.id);
+    if (postIndex === -1) {
+        toast({ title: "Error", description: "Could not find the post to update.", variant: "destructive" });
+        return;
     }
+    posts[postIndex].status = newStatus;
+    if (newStatus === 'rejected') {
+        posts[postIndex].rejectionReason = rejectionReason;
+    } else {
+        delete posts[postIndex].rejectionReason;
+    }
+
+    toast({
+        title: `Post ${newStatus}`,
+        description: "The post status has been updated.",
+    });
+    router.refresh();
   }
 
   const handleDelete = async () => {
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts/${post.id}`, {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) throw new Error('Failed to delete post');
-        
+    // In-memory delete
+    const postIndex = posts.findIndex(p => p.id === post.id);
+    if (postIndex > -1) {
+        posts.splice(postIndex, 1);
         toast({
             title: "Post Deleted",
             description: "The post has been successfully deleted.",
         });
         router.refresh();
-    } catch (error) {
-         toast({
+    } else {
+        toast({
             title: "Error",
             description: "Could not delete the post.",
             variant: "destructive"

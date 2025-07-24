@@ -4,11 +4,11 @@ import type { Campaign } from "@/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { accounts } from "@/lib/data";
 
 async function getCampaign(id: string): Promise<Campaign | undefined> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/campaigns/${id}`, { cache: 'no-store' });
-  if (!res.ok) return undefined;
-  return res.json();
+  const allCampaigns = accounts.flatMap(acc => acc.campaigns);
+  return allCampaigns.find(c => c.id === id);
 }
 
 export default async function EditCampaignPage({ params }: { params: { id: string } }) {

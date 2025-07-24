@@ -4,13 +4,10 @@ import type { Account } from "@/types"
 import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import Link from "next/link"
+import { accounts } from "@/lib/data"
 
 async function getCompanies(): Promise<Account[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/companies`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error('Failed to fetch accounts')
-  }
-  return res.json()
+  return accounts;
 }
 
 export default async function CompaniesPage() {

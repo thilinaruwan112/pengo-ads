@@ -3,20 +3,16 @@ import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button"
 import type { User } from "@/types"
 import { ClientCard } from "./client-card"
+import { users } from "@/lib/data"
 
 async function getUsers(): Promise<User[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error('Failed to fetch users')
-  }
-  const users = await res.json();
-  // Filter for clients only
+  // Filter for clients only from mock data
   return users.filter((user: User) => user.role === 'client');
 }
 
 
 export default async function ClientsPage() {
-  const users = await getUsers();
+  const clientUsers = await getUsers();
   
   return (
     <div className="container mx-auto py-2">
@@ -30,10 +26,10 @@ export default async function ClientsPage() {
         <Button>Add Client</Button>
       </div>
       <div className="hidden md:block">
-        <DataTable columns={columns} data={users} />
+        <DataTable columns={columns} data={clientUsers} />
       </div>
        <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {users.map((user: User) => (
+        {clientUsers.map((user: User) => (
             <ClientCard key={user.id} user={user} />
         ))}
       </div>
