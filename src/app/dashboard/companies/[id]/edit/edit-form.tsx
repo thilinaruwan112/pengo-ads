@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +22,17 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
   const router = useRouter();
   const { toast } = useToast();
 
+  const getInitialClientId = () => {
+    if (company) {
+        const client = clients.find(c => c.adAccountIds.includes(company.id));
+        return client?.id;
+    }
+    return undefined;
+  }
+  const initialClientId = getInitialClientId();
+
   const [companyName, setCompanyName] = useState(company?.companyName || "");
-  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(initialClientId);
   const [logoUrl, setLogoUrl] = useState(company?.logoUrl || "");
   const [address, setAddress] = useState(company?.address || "");
   const [employeeRange, setEmployeeRange] = useState(company?.employeeRange || "");
@@ -34,16 +43,11 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // In edit mode, we need to find which client this company belongs to.
-  // This is a bit complex with the current data structure, so we'll disable changing it on edit.
-  const getInitialClientId = () => {
+  useEffect(() => {
     if (company) {
-        const client = clients.find(c => c.adAccountIds.includes(company.id));
-        return client?.id;
+        setSelectedClientId(initialClientId);
     }
-    return undefined;
-  }
-  const initialClientId = getInitialClientId();
+  }, [company, initialClientId]);
 
 
   const handleSave = async () => {
@@ -51,15 +55,13 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
     
     const selectedClient = clients.find(c => c.id === selectedClientId);
 
-    if (isNew && !selectedClient) {
+    if (!selectedClient) {
         toast({ title: "Error", description: "You must select a client.", variant: "destructive" });
         setIsSubmitting(false);
         return;
     }
 
-    // When creating, clientName is derived from selected client.
-    // When editing, it's not changed via this form.
-    const clientName = isNew ? selectedClient!.name : company!.clientName;
+    const clientName = selectedClient.name;
     
     const companyData: Partial<Account> = {
       companyName,
@@ -84,16 +86,32 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
         
         const savedCompany = await response.json();
 
-        // If new, we need to associate it with the client
-        if (isNew && selectedClient) {
-            const updatedAdAccountIds = [...selectedClient.adAccountIds, savedCompany.id];
-            const userUpdateRes = await fetch(`/api/users/${selectedClient.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
-            });
-            if (!userUpdateRes.ok) throw new Error('Failed to associate company with client.');
+        // If the client has changed, update both old and new clients
+        if (initialClientId !== selectedClientId) {
+            // Remove from old client if there was one
+            if (initialClientId) {
+                const oldClient = clients.find(c => c.id === initialClientId);
+                if (oldClient) {
+                    const updatedAdAccountIds = oldClient.adAccountIds.filter(id => id !== savedCompany.id);
+                     await fetch(`/api/users/${oldClient.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
+                    });
+                }
+            }
+             // Add to new client
+            const newClient = clients.find(c => c.id === selectedClientId);
+             if (newClient) {
+                const updatedAdAccountIds = [...newClient.adAccountIds, savedCompany.id];
+                await fetch(`/api/users/${newClient.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adAccountIds: updatedAdAccountIds })
+                });
+             }
         }
+        
 
         toast({
             title: isNew ? "Company Created" : "Company Updated",
@@ -112,7 +130,7 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
     }
   };
 
-  const isSaveDisabled = isSubmitting || !companyName || (isNew && !selectedClientId);
+  const isSaveDisabled = isSubmitting || !companyName || !selectedClientId;
 
   return (
     <div className="grid gap-6">
@@ -136,9 +154,8 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
                         <div className="space-y-2">
                             <Label htmlFor="client-name">Primary Client</Label>
                              <Select 
-                                value={isNew ? selectedClientId : initialClientId} 
+                                value={selectedClientId} 
                                 onValueChange={setSelectedClientId}
-                                disabled={!isNew}
                             >
                                 <SelectTrigger id="client-name">
                                     <SelectValue placeholder="Select a client..." />
@@ -151,7 +168,6 @@ export function EditCompanyForm({ company, isNew, clients }: EditCompanyFormProp
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {!isNew && <p className="text-xs text-muted-foreground">To change the client, please edit the client's record.</p>}
                         </div>
                     </div>
 
