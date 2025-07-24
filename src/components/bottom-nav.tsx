@@ -47,21 +47,22 @@ export function BottomNav({ client = false }: BottomNavProps) {
             key={route.href}
             href={route.href}
             className={cn(
-              "inline-flex flex-col items-center justify-center font-medium group",
+              "relative inline-flex flex-col items-center justify-end font-medium group",
               isActive ? 'text-primary' : 'text-muted-foreground'
             )}
           >
-            <div className={cn(
-                "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-accent/20",
-                 isActive && 'bg-accent text-accent-foreground -translate-y-5 shadow-lg'
-            )}>
-                 <route.icon className={cn("w-6 h-6", isActive ? "text-accent-foreground": "text-muted-foreground")} />
+            <div className={cn("flex flex-col items-center justify-center transition-all duration-300", isActive && '-translate-y-4')}>
+                <div className={cn(
+                    "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-accent/20",
+                    isActive && 'bg-accent text-accent-foreground shadow-lg'
+                )}>
+                    <route.icon className={cn("w-6 h-6", isActive ? "text-accent-foreground": "text-muted-foreground")} />
+                </div>
+                <span className="text-xs">{route.label}</span>
             </div>
-            <span className={cn(
-                "text-xs transition-opacity duration-300",
-            )}>{route.label}</span>
+            
             <div className={cn(
-                "h-1 w-6 rounded-full bg-primary transition-all duration-300 mt-auto",
+                "h-1 w-6 rounded-full bg-primary transition-all duration-300",
                 isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
             )} />
 
