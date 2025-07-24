@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, BarChart, Settings, Newspaper, Upload } from "lucide-react";
+import { Home, Users, BarChart, Settings, Newspaper, Upload, Building } from "lucide-react";
 
 interface BottomNavProps {
   client?: boolean;
@@ -28,8 +28,9 @@ export function BottomNav({ client = false }: BottomNavProps) {
     return [
       { href: "/dashboard", label: "Dashboard", icon: Home, active: basePath === '/dashboard' },
       { href: "/dashboard/campaigns", label: "Campaigns", icon: BarChart, active: basePath.startsWith('/dashboard/campaigns') },
+      { href: "/dashboard/companies", label: "Companies", icon: Building, active: basePath.startsWith('/dashboard/companies') },
+      { href: "/dashboard/clients", label: "Clients", icon: Users, active: basePath.startsWith('/dashboard/clients') },
       { href: "/dashboard/posts", label: "Posts", icon: Newspaper, active: basePath.startsWith('/dashboard/posts') },
-      { href: "/dashboard/import", label: "Import", icon: Upload, active: basePath.startsWith('/dashboard/import') },
       { href: "/dashboard/settings", label: "Settings", icon: Settings, active: basePath.startsWith('/dashboard/settings') },
     ];
   };
@@ -46,7 +47,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
             key={route.href}
             href={route.href}
             className={cn(
-              "inline-flex flex-col items-center justify-center font-medium",
+              "inline-flex flex-col items-center justify-center font-medium pt-2",
               isActive ? 'text-primary' : 'text-muted-foreground'
             )}
           >
@@ -58,10 +59,9 @@ export function BottomNav({ client = false }: BottomNavProps) {
             </div>
             <span className={cn(
                 "text-xs transition-opacity duration-300",
-                 isActive ? 'opacity-100' : 'opacity-0'
             )}>{route.label}</span>
             <div className={cn(
-                "h-1 w-6 rounded-full bg-primary transition-all duration-300",
+                "h-1 w-6 rounded-full bg-primary transition-all duration-300 mt-auto",
                 isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
             )} />
 
