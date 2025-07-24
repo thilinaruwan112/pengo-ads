@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,9 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { accounts } from "@/lib/data";
+import { accounts, users } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Campaign, Account, DailyPerformance } from "@/types";
+import type { Campaign, Account, DailyPerformance, User } from "@/types";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -32,7 +32,7 @@ interface CreateCampaignDialogProps {
     clientAccounts?: Account[];
 }
 
-export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts = accounts }: CreateCampaignDialogProps) {
+export function CreateCampaignDialog({ isClient = false, clientAccountId, clientAccounts: initialClientAccounts = accounts }: CreateCampaignDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +51,11 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
   const [resultType, setResultType] = useState("");
   const [currency, setCurrency] = useState("USD");
 
+  // Client and Company filtering
+  const [clients, setClients] = useState<User[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>();
+  const [filteredAccounts, setFilteredAccounts] = useState<Account[]>(initialClientAccounts);
+
   // Initial Performance Record
   const [date, setDate] = useState<Date>();
   const [reach, setReach] = useState("");
@@ -64,14 +69,32 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
   const [costPerResult, setCostPerResult] = useState("");
   const [linkClicks, setLinkClicks] = useState("");
 
-  const handleAccountChange = (accountId: string) => {
-    setSelectedAccount(accountId);
-  }
+  useEffect(() => {
+    // In a real app, you'd fetch this. For now, using mock data.
+    setClients(users.filter(u => u.role === 'client'));
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+        setFilteredAccounts(initialClientAccounts);
+    } else if (selectedClientId) {
+        const client = users.find(u => u.id === selectedClientId);
+        if (client) {
+            setFilteredAccounts(accounts.filter(acc => client.adAccountIds.includes(acc.id)));
+        }
+    } else {
+        setFilteredAccounts([]);
+    }
+    // Reset company selection when client changes
+    setSelectedAccount(undefined);
+  }, [selectedClientId, isClient, initialClientAccounts]);
+
 
   const resetForm = () => {
     setName("");
     setDescription("");
     setSelectedAccount(isClient ? clientAccountId : "");
+    setSelectedClientId(undefined);
     setStatus("active");
     setPlatform("Facebook");
     setAge("");
@@ -179,6 +202,42 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
         <div className="grid gap-6 py-4">
             {/* Campaign Details Section */}
             <h4 className="text-md font-medium">Campaign Details</h4>
+            
+            {!isClient && (
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                         <Label htmlFor="client-id">Client</Label>
+                         <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                            <SelectTrigger id="client-id">
+                                <SelectValue placeholder="Select a client" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {clients.map(client => (
+                                    <SelectItem key={client.id} value={client.id}>
+                                        {client.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="company-account">Company</Label>
+                        <Select value={selectedAccount} onValueChange={setSelectedAccount} disabled={!selectedClientId}>
+                            <SelectTrigger id="company-account">
+                                <SelectValue placeholder="Select a company" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {filteredAccounts.map(acc => (
+                                    <SelectItem key={acc.id} value={acc.id}>
+                                        {acc.companyName}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label htmlFor="campaign-name">Name</Label>
@@ -188,23 +247,6 @@ export function CreateCampaignDialog({ isClient = false, clientAccountId, client
                     <Label htmlFor="page-name">Page Name</Label>
                     <Input id="page-name" value={pageName} onChange={(e) => setPageName(e.target.value)} placeholder="e.g., Your Brand's Page" />
                 </div>
-                {!isClient && (
-                    <div className="space-y-2">
-                        <Label htmlFor="company-account">Company</Label>
-                        <Select value={selectedAccount} onValueChange={handleAccountChange}>
-                            <SelectTrigger id="company-account">
-                                <SelectValue placeholder="Select a company" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {clientAccounts.map(acc => (
-                                    <SelectItem key={acc.id} value={acc.id}>
-                                        {acc.companyName} ({acc.clientName})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
             </div>
             <div className="space-y-2">
                 <Label htmlFor="campaign-description">Description</Label>
