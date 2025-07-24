@@ -38,7 +38,7 @@ export function BottomNav({ client = false }: BottomNavProps) {
   const routes = client ? getClientRoutes() : getAdminRoutes();
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-20 bg-background/80 backdrop-blur-lg border-t md:hidden">
+    <div className="fixed bottom-0 left-0 z-50 w-full h-24 bg-background/80 backdrop-blur-lg border-t md:hidden">
       <div className="grid h-full max-w-lg mx-auto" style={{ gridTemplateColumns: `repeat(${routes.length}, 1fr)` }}>
         {routes.map((route) => {
           const isActive = route.active;
@@ -47,13 +47,13 @@ export function BottomNav({ client = false }: BottomNavProps) {
             key={route.href}
             href={route.href}
             className={cn(
-              "inline-flex flex-col items-center justify-center font-medium pt-2 group",
+              "inline-flex flex-col items-center justify-center font-medium pt-6 group",
               isActive ? 'text-primary' : 'text-muted-foreground'
             )}
           >
             <div className={cn(
                 "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-primary/5",
-                 isActive && 'bg-primary/10 text-primary -translate-y-4 shadow-lg'
+                 isActive && 'bg-primary/10 text-primary -translate-y-5 shadow-lg'
             )}>
                  <route.icon className={cn("w-6 h-6", isActive ? "text-primary": "text-muted-foreground")} />
             </div>
