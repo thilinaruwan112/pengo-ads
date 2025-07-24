@@ -57,7 +57,9 @@ export function ClientCard({ user }: ClientCardProps) {
                         Copy user ID
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Edit user</DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                      <Link href={`/dashboard/clients/${user.id}/edit`}>Edit user</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">Archive user</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

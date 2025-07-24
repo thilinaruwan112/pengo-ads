@@ -5,7 +5,7 @@ export type User = {
   role: "admin" | "client";
   avatar: string;
   status: "active" | "archived";
-  adAccountIds?: string[]; // Link to one or more ad accounts
+  adAccountIds: string[]; // Link to one or more ad accounts
 };
 
 export type DailyPerformance = {
