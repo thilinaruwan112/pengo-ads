@@ -176,25 +176,24 @@ export default async function ClientDashboardPage({
                 Showing data for <span className="font-semibold text-primary">{currentAccount.companyName}</span>.
             </p>
         </div>
-        <CreateCampaignDialog isClient={true} clientAccountId={adAccountId} clientAccounts={clientAccounts} />
       </div>
 
        <div className="grid gap-4 mb-6 sm:grid-cols-2 xl:grid-cols-3">
         <KpiCard
           title="Total Reach"
-          value={totalReach}
+          value={totalReach.toLocaleString()}
           description="All-time total reach"
           Icon={Users}
         />
         <KpiCard
           title="Impressions"
-          value={totalImpressions}
+          value={totalImpressions.toLocaleString()}
           description="All-time total impressions"
           Icon={Eye}
         />
         <KpiCard
           title="Results"
-          value={totalResults}
+          value={totalResults.toLocaleString()}
           description="All-time total results"
           Icon={Activity}
         />
