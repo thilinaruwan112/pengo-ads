@@ -16,11 +16,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import type { Account, Campaign, Post } from "@/types"
+import type { Account, Campaign, Post, User } from "@/types"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { cn } from "@/lib/utils"
 import { Check, ThumbsDown, Clock, ThumbsUp } from "lucide-react"
+import { users } from "@/lib/data"
 
 interface CreatePostDialogProps {
     accounts: Account[];
@@ -56,11 +57,19 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>();
   const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>(isClient ? clientAccountId : undefined);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | undefined>();
   const [status, setStatus] = useState<Post['status']>('needs-approval');
 
+  const [clients, setClients] = useState<User[]>([]);
+  const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
   const [filteredCampaigns, setFilteredCampaigns] = useState<(Campaign & { companyName: string })[]>([]);
+
+  useEffect(() => {
+    // In a real app, you'd fetch this. For now, using mock data.
+    setClients(users.filter(u => u.role === 'client'));
+  }, []);
 
   useEffect(() => {
     if (isEditMode && postToEdit) {
@@ -71,8 +80,25 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
       setSelectedAccountId(postToEdit.accountId);
       setSelectedCampaignId(postToEdit.campaignId);
       setStatus(postToEdit.status);
+
+      const client = clients.find(c => c.adAccountIds.includes(postToEdit.accountId));
+      setSelectedClientId(client?.id);
     }
-  }, [postToEdit, isEditMode]);
+  }, [postToEdit, isEditMode, clients]);
+
+   useEffect(() => {
+    if (selectedClientId) {
+      const client = clients.find(c => c.id === selectedClientId);
+      if (client) {
+        setFilteredAccounts(accounts.filter(acc => client.adAccountIds.includes(acc.id)));
+      }
+    } else {
+      setFilteredAccounts(isClient ? accounts.filter(a => a.id === clientAccountId) : []);
+    }
+     if (!isEditMode || (isEditMode && postToEdit?.accountId !== selectedAccountId)) {
+        setSelectedAccountId(undefined);
+    }
+  }, [selectedClientId, clients, accounts, isEditMode, postToEdit, isClient, clientAccountId]);
 
   useEffect(() => {
     if (selectedAccountId) {
@@ -83,16 +109,17 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
     } else {
       setFilteredCampaigns([]);
     }
-    if (!isEditMode) {
-     setSelectedCampaignId(undefined);
+     if (!isEditMode || (isEditMode && postToEdit?.campaignId !== selectedCampaignId)) {
+        setSelectedCampaignId(undefined);
     }
-  }, [selectedAccountId, accounts, campaigns, isEditMode]);
+  }, [selectedAccountId, accounts, campaigns, isEditMode, postToEdit]);
 
 
   const resetForm = () => {
     setContent("");
     setMediaUrl("");
     setScheduledDate("");
+    setSelectedClientId(undefined);
     setSelectedAccountId(isClient ? clientAccountId : undefined);
     setSelectedCampaignId(undefined);
     setStatus("needs-approval");
@@ -163,16 +190,33 @@ export function CreatePostDialog({ accounts, campaigns, postToEdit, isOpen, setI
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+            {!isClient && (
+                <div className="space-y-2">
+                    <Label htmlFor="client-id">Client</Label>
+                    <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                        <SelectTrigger id="client-id">
+                            <SelectValue placeholder="Select a client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {clients.map(client => (
+                                <SelectItem key={client.id} value={client.id}>
+                                    {client.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
             <div className="space-y-2">
-                <Label htmlFor="account-id">Client Account</Label>
-                 <Select value={selectedAccountId} onValueChange={setSelectedAccountId} disabled={isClient}>
+                <Label htmlFor="account-id">Company</Label>
+                 <Select value={selectedAccountId} onValueChange={setSelectedAccountId} disabled={!isClient && !selectedClientId}>
                     <SelectTrigger id="account-id">
-                        <SelectValue placeholder="Select an account" />
+                        <SelectValue placeholder="Select a company" />
                     </SelectTrigger>
                     <SelectContent>
-                        {accounts.map(acc => (
+                        {filteredAccounts.map(acc => (
                             <SelectItem key={acc.id} value={acc.id}>
-                                {acc.companyName} ({acc.clientName})
+                                {acc.companyName}
                             </SelectItem>
                         ))}
                     </SelectContent>
