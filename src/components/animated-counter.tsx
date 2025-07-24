@@ -37,5 +37,5 @@ export function AnimatedCounter({ value, className, prefix, suffix, decimals = 0
     [springValue, prefix, suffix, decimals]
   );
 
-  return <span ref={ref} className={className} />;
+  return <span ref={ref} className={className}>{prefix || ''}{value.toFixed(decimals)}{suffix || ''}</span>;
 }
