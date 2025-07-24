@@ -1,3 +1,4 @@
+
 import { PostCard } from "@/components/post-card"
 import { users, accounts, posts as allPosts } from "@/lib/data"
 import type { Post, User, Account, Campaign } from "@/types"
@@ -82,7 +83,7 @@ export default async function ClientPostsPage({
                     </p>
                 </div>
             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+             <div className="flex flex-col gap-4">
                 {posts.length > 0 ? posts.map((post: Post) => (
                     <PostCard key={post.id} post={post} isClientView={true} accounts={allAccounts} campaigns={campaigns} />
                 )) : (

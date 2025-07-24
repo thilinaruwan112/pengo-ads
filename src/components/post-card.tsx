@@ -2,21 +2,19 @@
 "use client"
 
 import type { Post, Account, Campaign } from "@/types"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import Image from "next/image"
 import { format, parseISO } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Check, ThumbsDown, Clock, ThumbsUp, X, MoreVertical, Trash2, Edit } from "lucide-react"
+import { Check, ThumbsDown, Clock, ThumbsUp, MoreVertical, Trash2, Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CreatePostDialog } from "./create-post-dialog"
@@ -56,6 +54,8 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
   const router = useRouter();
   const currentStatus = statusConfig[post.status];
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const company = accounts.find(acc => acc.id === post.accountId);
+  const campaign = campaigns.find(c => c.id === post.campaignId);
 
   const handleStatusChange = async (newStatus: 'approved' | 'rejected') => {
     let rejectionReason: string | undefined;
@@ -64,7 +64,6 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
         if (rejectionReason === null) return; // User cancelled prompt
     }
 
-    // In-memory update
     const postIndex = posts.findIndex(p => p.id === post.id);
     if (postIndex === -1) {
         toast({ title: "Error", description: "Could not find the post to update.", variant: "destructive" });
@@ -85,7 +84,6 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
   }
 
   const handleDelete = async () => {
-    // In-memory delete
     const postIndex = posts.findIndex(p => p.id === post.id);
     if (postIndex > -1) {
         posts.splice(postIndex, 1);
@@ -106,81 +104,84 @@ export function PostCard({ post, isClientView = false, accounts, campaigns }: Po
 
   return (
     <>
-    <Card className="flex flex-col">
-      <CardHeader className="p-0">
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-md">
-            <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" data-ai-hint="social media post" />
-             {!isClientView && (
-                <div className="absolute top-2 right-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="h-8 w-8 bg-black/50 hover:bg-black/70 border-none text-white">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                             <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
-                                <Edit className="mr-2" /> Edit
-                            </DropdownMenuItem>
-                             <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                        <Trash2 className="mr-2" /> Delete
-                                    </DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the post.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleDelete} className={buttonVariants({variant: "destructive"})}>
-                                            Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+    <Card>
+      <CardContent className="flex items-start gap-4 p-4">
+        <div className="relative aspect-square w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-md shrink-0">
+          <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" data-ai-hint="social media post" />
+        </div>
+        <div className="flex-grow space-y-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-semibold text-sm">{company?.companyName || 'Unknown Company'}</p>
+                <p className="text-xs text-muted-foreground">{campaign?.name || 'Unknown Campaign'}</p>
+                <p className="text-xs text-muted-foreground pt-1">
+                  Scheduled for: {format(parseISO(post.scheduledDate), "MMM d, h:mm a")}
+                </p>
+              </div>
+              <Badge className={cn("capitalize text-white text-xs", currentStatus.color)}>
+                  <currentStatus.icon className="h-3 w-3 mr-1" />
+                  {currentStatus.label}
+              </Badge>
+            </div>
+          
+            <p className="text-sm text-muted-foreground line-clamp-3">
+              {post.content}
+            </p>
+
+            {post.status === 'rejected' && post.rejectionReason && (
+              <div className="p-2 bg-destructive/10 text-destructive text-xs rounded-md border border-destructive/20">
+                  <strong>Rejection Reason:</strong> {post.rejectionReason}
+              </div>
             )}
         </div>
-      </CardHeader>
-      <CardContent className="flex-grow space-y-3 p-4">
-        <div className="flex justify-between items-center">
-            <Badge className={cn("capitalize text-white", currentStatus.color)}>
-                <currentStatus.icon className="h-3 w-3 mr-1" />
-                {currentStatus.label}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-                {format(parseISO(post.scheduledDate), "MMM d, yyyy 'at' h:mm a")}
-            </span>
+        <div className="flex flex-col items-center gap-2">
+            {isClientView && post.status === 'needs-approval' && (
+              <div className="flex flex-col sm:flex-row md:flex-col gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleStatusChange('rejected')}>
+                       Reject
+                  </Button>
+                  <Button size="sm" onClick={() => handleStatusChange('approved')}>
+                      Approve
+                  </Button>
+              </div>
+            )}
+            {!isClientView && (
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                      </DropdownMenuItem>
+                      <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
+                                  <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                              <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete the post.
+                                  </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={handleDelete} className={buttonVariants({variant: "destructive"})}>
+                                      Delete
+                                  </AlertDialogAction>
+                              </AlertDialogFooter>
+                          </AlertDialogContent>
+                      </AlertDialog>
+                  </DropdownMenuContent>
+              </DropdownMenu>
+            )}
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-4">
-            {post.content}
-        </p>
-        {!isClientView && (
-            <CardDescription>{(post as any).companyName}</CardDescription>
-        )}
-        {post.status === 'rejected' && post.rejectionReason && (
-             <div className="p-2 bg-destructive/10 text-destructive text-xs rounded-md border border-destructive/20">
-                <strong>Rejection Reason:</strong> {post.rejectionReason}
-            </div>
-        )}
       </CardContent>
-      {isClientView && post.status === 'needs-approval' && (
-        <CardFooter className="flex justify-end gap-2 p-4 pt-0">
-            <Button variant="outline" size="sm" onClick={() => handleStatusChange('rejected')}>
-                <X className="mr-1 h-4 w-4" /> Reject
-            </Button>
-            <Button size="sm" onClick={() => handleStatusChange('approved')}>
-                <Check className="mr-1 h-4 w-4" /> Approve
-            </Button>
-        </CardFooter>
-      )}
     </Card>
      <CreatePostDialog
         isOpen={isEditOpen}

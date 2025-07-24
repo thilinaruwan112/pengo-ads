@@ -1,3 +1,4 @@
+
 import { PostCard } from "@/components/post-card"
 import type { Post, Account, Campaign } from "@/types"
 import { CreatePostDialog } from "@/components/create-post-dialog";
@@ -57,7 +58,7 @@ export default async function PostsPage({
             <CreatePostDialog accounts={accountsData} campaigns={campaigns} />
         </div>
       </div>
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+       <div className="flex flex-col gap-4">
         {filteredPosts.length > 0 ? (
             filteredPosts.map((post: Post) => (
                 <PostCard key={post.id} post={post} accounts={accountsData} campaigns={campaigns} />
