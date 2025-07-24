@@ -52,10 +52,10 @@ export function BottomNav({ client = false }: BottomNavProps) {
             )}
           >
             <div className={cn(
-                "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-primary/5",
-                 isActive && 'bg-primary/10 text-primary -translate-y-5 shadow-lg'
+                "flex items-center justify-center rounded-full h-12 w-16 transition-all duration-300 relative group-hover:bg-accent/20",
+                 isActive && 'bg-accent text-accent-foreground -translate-y-5 shadow-lg'
             )}>
-                 <route.icon className={cn("w-6 h-6", isActive ? "text-primary": "text-muted-foreground")} />
+                 <route.icon className={cn("w-6 h-6", isActive ? "text-accent-foreground": "text-muted-foreground")} />
             </div>
             <span className={cn(
                 "text-xs transition-opacity duration-300",
