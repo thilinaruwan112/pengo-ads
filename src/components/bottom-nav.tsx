@@ -29,7 +29,6 @@ export function BottomNav({ client = false }: BottomNavProps) {
       { href: "/dashboard", label: "Dashboard", icon: Home, active: basePath === '/dashboard' },
       { href: "/dashboard/campaigns", label: "Campaigns", icon: BarChart, active: basePath.startsWith('/dashboard/campaigns') },
       { href: "/dashboard/companies", label: "Companies", icon: Building, active: basePath.startsWith('/dashboard/companies') },
-      { href: "/dashboard/clients", label: "Clients", icon: Users, active: basePath.startsWith('/dashboard/clients') },
       { href: "/dashboard/posts", label: "Posts", icon: Newspaper, active: basePath.startsWith('/dashboard/posts') },
       { href: "/dashboard/settings", label: "Settings", icon: Settings, active: basePath.startsWith('/dashboard/settings') },
     ];
